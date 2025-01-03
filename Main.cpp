@@ -3,7 +3,7 @@
 
 int main()
 {
-	std::cout << "Mathness v.0.1" << std::endl;
+	std::cout << "Mathness v0.1" << std::endl;
 
 	App::GetInstance().Run();
 

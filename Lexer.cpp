@@ -12,20 +12,12 @@ Lexer& Lexer::GetInstance()
 void Lexer::Init(std::string& input)
 {
 	this->_Input = input;
-	ClearComments();
 
 	_Index = 0;
 	_Tokens.clear();
 }
 
-void Lexer::ClearComments()
-{
-	size_t commentIndex = _Input.find("#");
-	if (commentIndex != std::string::npos)
-	{
-		_Input = _Input.substr(0, commentIndex);
-	}
-}
+
 
 void Lexer::CheckForNumber()
 {
@@ -67,6 +59,13 @@ bool Lexer::CheckForSymbol()
 	return true;
 }
 
+static std::string ToLower(std::string s)
+{
+	std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return std::tolower(c); });
+	return s;
+
+}
+
 void Lexer::CheckForIdentifier()
 {
 	int beginIndex = _Index;
@@ -83,39 +82,43 @@ void Lexer::CheckForIdentifier()
 		return;
 	}
 
-	_Tokens.emplace_back(TokenType::IDENTIFIER, _Input.substr(beginIndex, (size_t)_Index - beginIndex));
+	std::string identifier = _Input.substr(beginIndex, (size_t)_Index - beginIndex);
+	TokenType type = GetIdentifierMap().find(ToLower(identifier)) != GetIdentifierMap().end() ? GetIdentifierMap().at(ToLower(identifier)) : TokenType::STORAGE;
+
+	_Tokens.emplace_back(type, identifier);
 }
 
-std::tuple<std::vector<LexingToken>, std::string> Lexer::Lex(std::string& input)
+std::tuple<std::vector<LexingToken>, std::optional<error_t>> Lexer::Lex(std::string& input)
 {
 	assert(input.size() > 0);
 
 	Init(input);
 
-	while (_Index < input.size())
+	while (_Index < _Input.size())
 	{
-		if (isspace(input[_Index]))
+		if (isspace(_Input[_Index]))
 		{
 			_Index++;
 			continue;
 		}
 
-		if (isdigit(input[_Index]))
+		if (isdigit(_Input[_Index]))
 		{
 			CheckForNumber();
 			continue;
 		}
 
-		if (isalpha(input[_Index]) || input[_Index] == '_')
+		if (isalpha(_Input[_Index]) || _Input[_Index] == '_')
 		{
 			CheckForIdentifier();
+
 			continue;
 		}
 
 
 		if (!CheckForSymbol())
 		{
-			std::string error = std::format("Invalid token '{}' found at index {}", input[_Index], _Index);
+			error_t error = std::format("Invalid token '{}' found at index {}", _Input[_Index], _Index);
 
 			if (_Tokens.size() > 0)
 			{
@@ -126,6 +129,6 @@ std::tuple<std::vector<LexingToken>, std::string> Lexer::Lex(std::string& input)
 		}
 	}
 
-	return { _Tokens, std::string()};
+	return { _Tokens, std::nullopt};
 }
 

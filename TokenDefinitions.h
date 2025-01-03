@@ -14,8 +14,10 @@
 
 enum class TokenType
 {
-	IDENTIFIER,
 	NUMBER,
+
+	//SYMBOLS
+
 
 	PLUS,
 	MINUS,
@@ -36,28 +38,25 @@ enum class TokenType
 	SEMICOLON,
 
 	EQUALS,
-};
 
-enum class IdentifierType
-{
+	//IDENTIFIERS
+
+
 	STORAGE,
 
 	PI,
 	E,
 
-
 	SCALAR_PRODUCT,
 	VECTOR_PRODUCT,
-
 	LOG,
-	
+
 	SQRT,
 	ABS,
 	NEGATE,
 	EXP,
 	LN,
 	FACTORIAL,
-
 
 	SIN,
 	COS,
@@ -66,11 +65,9 @@ enum class IdentifierType
 	ACOS,
 	ATAN,
 
-
 	HELP,
 	PRINT,
 	EXIT,
-
 };
 
 
@@ -100,64 +97,68 @@ static const std::unordered_map<char, TokenType>& GetSymbolMap()
 
 }
 
-//std::unordered_map<std::string_view, TokenType> constant_map = {
-//	{ "pi", TokenType::PI },
-//	{ "e", TokenType::E },
-//};
-//
+static const std::unordered_map<std::string, TokenType>& GetIdentifierMap()
+{
+	static const std::unordered_map<std::string, TokenType> identifier_map = 
+	{
+		{ "pi", TokenType::PI },
+		{ "e", TokenType::E },
+		{ "dot", TokenType::SCALAR_PRODUCT },
+		{ "cross", TokenType::VECTOR_PRODUCT },
+		{ "log", TokenType::LOG },
+		{ "sqrt", TokenType::SQRT },
+		{ "abs", TokenType::ABS },
+		{ "neg", TokenType::NEGATE },
+		{ "exp", TokenType::EXP },
+		{ "ln", TokenType::LN },
+		{ "fact", TokenType::FACTORIAL },
+		{ "sin", TokenType::SIN },
+		{ "cos", TokenType::COS },
+		{ "tan", TokenType::TAN },
+		{ "asin", TokenType::ASIN },
+		{ "acos", TokenType::ACOS },
+		{ "atan", TokenType::ATAN },
+		{ "help", TokenType::HELP },
+		{ "print", TokenType::PRINT },
+		{ "exit", TokenType::EXIT },
+	};
 
-//std::unordered_map<std::string_view, TokenType> binary_operator_symbol_map = {
-//	{ "+", TokenType::PLUS },
-//	{ "-", TokenType::MINUS },
-//	{ "*", TokenType::PRODUCT },
-//	{ "/", TokenType::DIVIDE },
-//	{ "%", TokenType::MODULUS },
-//	{ "^", TokenType::POWER },
-//};
-//std::unordered_map<std::string_view, TokenType> binary_operator_keyword_map = {
-//	{ "dot", TokenType::SCALAR_PRODUCT },
-//	{ "cross", TokenType::VECTOR_PRODUCT },
-//	{ "log", TokenType::LOG },
-//};
-//
-//std::unordered_map<std::string_view, TokenType> unary_operator_keyword_map = {
-//	{ "sqrt", TokenType::SQRT },
-//	{ "abs", TokenType::ABS },
-//	{ "neg", TokenType::NEGATE },
-//	{ "exp", TokenType::EXP },
-//	{ "ln", TokenType::LN },
-//	{ "fact", TokenType::FACTORIAL },
-//};
-//
-//std::unordered_map<std::string_view, TokenType> trigonometric_function_map = {
-//	{ "sin", TokenType::SIN },
-//	{ "cos", TokenType::COS },
-//	{ "tan", TokenType::TAN },
-//	{ "asin", TokenType::ASIN },
-//	{ "acos", TokenType::ACOS },
-//	{ "atan", TokenType::ATAN },
-//};
-//
-//std::unordered_map<std::string_view, TokenType> bracket_map = 
-//{
-//	{ "(", TokenType::OPEN_ROUND_BRACKET },
-//	{ ")", TokenType::CLOSE_ROUND_BRACKET },
-//	{ "[", TokenType::OPEN_SQUARE_BRACKET },
-//	{ "]", TokenType::CLOSE_SQUARE_BRACKET },
-//	{ "{", TokenType::OPEN_CURLY_BRACKET },
-//	{ "}", TokenType::CLOSE_CURLY_BRACKET },
-//};
-//
-//std::unordered_map<std::string_view, TokenType> extra_symbol_map = {
-//	{ ",", TokenType::COMMA },
-//	{ "=", TokenType::EQUALS },
-//};
-//
-//std::unordered_map<std::string_view, TokenType> command_map = {
-//	{ "help", TokenType::HELP },
-//	{ "print", TokenType::PRINT },
-//	{ "exit", TokenType::EXIT },
-//};
+	return identifier_map;
+}
+
+static bool IsTokenElementaryFunction(TokenType token)
+{
+	return 
+		
+		token == TokenType::SCALAR_PRODUCT ||
+		token == TokenType::VECTOR_PRODUCT ||
+		token == TokenType::LOG || 
+
+		token == TokenType::SQRT || 
+		token == TokenType::ABS || 
+		token == TokenType::NEGATE || 
+		token == TokenType::EXP ||
+		token == TokenType::LN || 
+		token == TokenType::FACTORIAL || 
+
+		token == TokenType::SIN || 
+		token == TokenType::COS || 
+		token == TokenType::TAN || 
+		token == TokenType::ASIN || 
+		token == TokenType::ACOS || 
+		token == TokenType::ATAN;
+}
+
+static bool IsTokenArithmeticOperator(TokenType token)
+{
+	return
+		token == TokenType::PLUS ||
+		token == TokenType::MINUS ||
+		token == TokenType::PRODUCT ||
+		token == TokenType::DIVIDE ||
+		token == TokenType::MODULUS ||
+		token == TokenType::POWER;
+}
 
 
 
@@ -174,10 +175,6 @@ struct LexingToken
 		{
 		case TokenType::NUMBER:
 			s_type = "NUMBER";
-			break;
-
-		case TokenType::IDENTIFIER:
-			s_type = "IDENTIFIER";
 			break;
 
 		case TokenType::PLUS:
@@ -243,6 +240,90 @@ struct LexingToken
 
 		case TokenType::EQUALS:
 			s_type = "EQUALS";
+			break;
+
+		case TokenType::STORAGE:
+			s_type = "STORAGE";
+			break;
+
+		case TokenType::PI:
+			s_type = "PI";
+			break;
+
+		case TokenType::E:
+			s_type = "E";
+			break;
+
+		case TokenType::SCALAR_PRODUCT:
+			s_type = "SCALAR_PRODUCT";
+			break;
+
+		case TokenType::VECTOR_PRODUCT:
+			s_type = "VECTOR_PRODUCT";
+			break;
+
+		case TokenType::LOG:
+			s_type = "LOG";
+			break;
+
+		case TokenType::SQRT:
+			s_type = "SQRT";
+			break;
+
+		case TokenType::ABS:
+			s_type = "ABS";
+			break;
+
+		case TokenType::NEGATE:
+			s_type = "NEGATE";
+			break;
+
+		case TokenType::EXP:
+			s_type = "EXP";
+			break;
+
+		case TokenType::LN:
+			s_type = "LN";
+			break;
+
+		case TokenType::FACTORIAL:
+			s_type = "FACTORIAL";
+			break;
+
+		case TokenType::SIN:
+			s_type = "SIN";
+			break;
+
+		case TokenType::COS:
+			s_type = "COS";
+			break;
+
+		case TokenType::TAN:
+			s_type = "TAN";
+			break;
+
+		case TokenType::ASIN:
+			s_type = "ASIN";
+			break;
+
+		case TokenType::ACOS:
+			s_type = "ACOS";
+			break;
+
+		case TokenType::ATAN:
+			s_type = "ATAN";
+			break;
+
+		case TokenType::HELP:
+			s_type = "HELP";
+			break;
+
+		case TokenType::PRINT:
+			s_type = "PRINT";
+			break;
+
+		case TokenType::EXIT:
+			s_type = "EXIT";
 			break;
 
 		default:
