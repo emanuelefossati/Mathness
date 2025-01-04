@@ -25,6 +25,21 @@
     <Filter Include="Source Files\Parsing">
       <UniqueIdentifier>{ec61236c-15b1-4d95-a476-7fa748d56ae5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Parsing\Parser">
+      <UniqueIdentifier>{a1ccf465-c0a1-4699-9c7b-22848038bc04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parsing\AST">
+      <UniqueIdentifier>{2c187933-e79d-40a9-b3a7-b3ae75656500}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parsing\AST\Value Nodes">
+      <UniqueIdentifier>{57920fda-6561-4030-9f58-c1f76bcad591}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parsing\AST\Binary Operation Nodes">
+      <UniqueIdentifier>{0aaa1dfe-bfda-49f2-b4ba-f14f33d34062}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parsing\AST\Binary Operation Nodes\Sum">
+      <UniqueIdentifier>{a429aa97-6e6d-4006-a5d8-a1b8fdd166d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -37,7 +52,19 @@
       <Filter>Source Files\Lexing\Lexer</Filter>
     </ClCompile>
     <ClCompile Include="Parser.cpp">
-      <Filter>Source Files\Parsing</Filter>
+      <Filter>Source Files\Parsing\Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="ScalarNode.cpp">
+      <Filter>Source Files\Parsing\AST\Value Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="MatrixNode.cpp">
+      <Filter>Source Files\Parsing\AST\Value Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="ListNode.cpp">
+      <Filter>Source Files\Parsing\AST\Value Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="SumNode.cpp">
+      <Filter>Source Files\Parsing\AST\Binary Operation Nodes\Sum</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -50,11 +77,26 @@
     <ClInclude Include="TokenDefinitions.h">
       <Filter>Source Files\Lexing</Filter>
     </ClInclude>
-    <ClInclude Include="Parser.h">
-      <Filter>Source Files\Parsing</Filter>
-    </ClInclude>
     <ClInclude Include="Utils.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Parser.h">
+      <Filter>Source Files\Parsing\Parser</Filter>
+    </ClInclude>
+    <ClInclude Include="Node.h">
+      <Filter>Source Files\Parsing\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="ScalarNode.h">
+      <Filter>Source Files\Parsing\AST\Value Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="MatrixNode.h">
+      <Filter>Source Files\Parsing\AST\Value Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="ListNode.h">
+      <Filter>Source Files\Parsing\AST\Value Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="SumNode.h">
+      <Filter>Source Files\Parsing\AST\Binary Operation Nodes\Sum</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

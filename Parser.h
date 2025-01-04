@@ -13,8 +13,6 @@ struct ParsingToken : LexingToken
 	int Depth = 0;
 
 	ParsingToken(LexingToken token, int depth) : LexingToken(token), Depth(depth) {}
-
-
 };
 
 class Parser

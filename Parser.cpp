@@ -102,7 +102,7 @@ std::optional<error_t> Parser::CheckAssignment()
 		return error_t("Multiple assignments found");
 
 	if (assignmentCount == 0)
-		return;
+		return std::nullopt;
 
 	// One assignment found
 
@@ -116,5 +116,7 @@ std::optional<error_t> Parser::CheckAssignment()
 
 	//Remove the first two tokens
 	_Tokens.erase(_Tokens.begin(), _Tokens.begin() + 2);
+
+	return std::nullopt;
 }
 
