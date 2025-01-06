@@ -1,5 +1,5 @@
 #pragma once
-#include "Lexer.h"
+#include "./Lexer/Lexer.h"
 
 class App
 {

@@ -6,7 +6,7 @@
 #include <string>
 #include <format>
 
-#include "Utils.h"
+#include "../Utils/TypeDefinitions.h"
 
 
 struct Matrix

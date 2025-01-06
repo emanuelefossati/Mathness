@@ -5,8 +5,8 @@
 #include <tuple>
 #include <vector>
 
-#include "TokenDefinitions.h"
-#include "Utils.h"
+#include "../Utils/TokenDefinitions.h"
+#include "../Utils/TypeDefinitions.h"
 
 struct ParsingToken : LexingToken 
 {

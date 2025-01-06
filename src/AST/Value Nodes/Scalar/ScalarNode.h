@@ -1,5 +1,6 @@
 #pragma once
-#include "Node.h"
+
+#include "../../Node.h"
 
 class ScalarNode : public INode
 {
