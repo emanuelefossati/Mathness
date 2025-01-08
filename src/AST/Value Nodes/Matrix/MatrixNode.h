@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../Node.h"
+#include "./Results/Matrix/Matrix.h"
 
 
 class MatrixNode : public INode

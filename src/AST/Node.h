@@ -5,16 +5,18 @@
 #include <variant>
 #include <string>
 #include <format>
+#include <assert.h>
 
 #include "../Utils/TypeDefinitions.h"
+#include "../Results/Matrix/Matrix.h"
 
 
-struct Matrix
+
+
+struct Vector
 {
-	std::vector<scalar_t> Elements;
-	
-	size_t Rows = 0;
-	size_t Columns = 0;
+	Matrix Data;
+
 };
 
 struct List 

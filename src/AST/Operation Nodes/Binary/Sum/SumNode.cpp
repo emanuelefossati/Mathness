@@ -1,8 +1,6 @@
 #include "SumNode.h"
 
 
-
-
 Result AlgebraicSumNode::GetResult() const
 {
 	Result leftResult = _Left->GetResult();
