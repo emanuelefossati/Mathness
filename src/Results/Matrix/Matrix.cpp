@@ -65,6 +65,11 @@ const Matrix Matrix::operator*(const Matrix& other) const
 
 }
 
+const Matrix Matrix::operator/(scalar_t scalar) const
+{
+	return *this * (1 / scalar);
+}
+
 const Matrix Matrix::operator/(const Matrix& other) const
 {
 	assert(IsSquare());
@@ -270,4 +275,31 @@ const Matrix Matrix::Normalize() const
 	scalar_t norm = Norm();
 
 	return *this * (1/norm);
+}
+
+const std::string Matrix::ToString() const
+{
+	std::string result = "[";
+
+	for (size_t i = 0; i < Rows; i++)
+	{
+		result += "[";
+
+		for (size_t j = 0; j < Columns; j++)
+		{
+			result += std::to_string((*this)(i, j));
+
+			if (j != Columns - 1)
+				result += ", ";
+		}
+
+		result += "]";
+
+		if (i != Rows - 1)
+			result += ", ";
+	}
+
+	result += "]";
+
+	return result;
 }

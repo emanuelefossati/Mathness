@@ -16,6 +16,7 @@ struct Matrix
 	const Matrix operator-(const Matrix& other) const;
 	const Matrix operator*(scalar_t scalar) const;
 	const Matrix operator*(const Matrix& other) const;
+	const Matrix operator/(scalar_t scalar) const;
 	const Matrix operator/(const Matrix& other) const;
 
 	const Matrix Transpose() const;
@@ -34,4 +35,6 @@ struct Matrix
 	const bool IsIdentity() const;
 	const bool IsDiagonal() const;
 	const bool IsSingular() const;
+
+	const std::string ToString() const;
 };

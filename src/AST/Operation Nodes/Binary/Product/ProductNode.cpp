@@ -41,30 +41,9 @@ Result ProductNode::GetResult() const
 	}
 
 	// Scalar * Matrix
-	auto [scalar, matrix] = GetParams(leftResult, rightResult);
+	auto [scalar, matrix] = RetrieveScalarAndMatrix(leftResult, rightResult);
 
 	return matrix * scalar;
-}
-
-std::tuple<scalar_t, Matrix> ProductNode::GetParams(const Result& leftResult, const Result& rightResult) const
-{
-	assert(IsScalar(leftResult) != IsScalar(rightResult));
-	assert(IsMatrix(leftResult) != IsMatrix(rightResult));
-
-	if (IsScalar(leftResult))
-	{
-		scalar_t leftScalar = std::get<scalar_t>(leftResult);
-		Matrix rightMatrix = std::get<Matrix>(rightResult);
-
-		return { leftScalar, rightMatrix };
-	}
-	else
-	{
-		Matrix leftMatrix = std::get<Matrix>(leftResult);
-		scalar_t rightScalar = std::get<scalar_t>(rightResult);
-
-		return { rightScalar, leftMatrix };
-	}
 }
 
 bool ProductNode::CanMatricesBeMultiplied(const Matrix& left, const Matrix& right)

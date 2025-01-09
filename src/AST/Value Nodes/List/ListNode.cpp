@@ -24,7 +24,7 @@ Result ListNode::GetResult() const
 		if (std::holds_alternative<scalar_t>(result))
 		{
 			scalar_t scalar = std::get<scalar_t>(result);
-			list.Elements.push_back(scalar);
+			list.Elements.emplace_back(scalar);
 		}
 
 		else

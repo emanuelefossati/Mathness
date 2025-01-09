@@ -39,5 +39,8 @@ Result MatrixNode::GetResult() const
 			return error_t(std::format("cannot resolve element inside matrix #{} at ({};{})", _Id, currentRow, currentColumn));
 	}
 
+	if(matrix.Elements.size() == 1)
+		return matrix(0, 0);
+
 	return matrix;
 }
