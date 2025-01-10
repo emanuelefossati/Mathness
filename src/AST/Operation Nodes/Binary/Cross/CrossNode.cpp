@@ -1,6 +1,6 @@
 #include "CrossNode.h"
 
-Result CrossNode::GetResult() const override
+Result CrossNode::GetResult() const
 {
 	auto leftResult = _Left->GetResult();
 	auto rightResult = _Right->GetResult();
@@ -20,8 +20,8 @@ Result CrossNode::GetResult() const override
 	if (!leftMatrix.IsVector() || !rightMatrix.IsVector())
 		return error_t("cross product is only defined for vectors");
 
-	if (leftMatrix.Rows  != 3 || rightMatrix.Rows != 3)
-		return error_t("cross product is only defined for vectors of size 3")
+	if (leftMatrix.Rows != 3 || rightMatrix.Rows != 3)
+		return error_t("cross product is only defined for vectors of size 3");
 
 	return leftMatrix.Cross(rightMatrix);
 }

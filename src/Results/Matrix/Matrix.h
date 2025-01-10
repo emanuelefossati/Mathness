@@ -30,11 +30,11 @@ struct Matrix
 	const Matrix Normalize() const;
 
 
-	const bool IsVector() const;
-	const bool IsSquare() const;
-	const bool IsIdentity() const;
-	const bool IsDiagonal() const;
-	const bool IsSingular() const;
+	constexpr bool IsVector() const;
+	constexpr bool IsSquare() const;
+	constexpr bool IsIdentity() const;
+	constexpr bool IsDiagonal() const;
+	constexpr bool IsSingular() const;
 
 	const std::string ToString() const;
 };

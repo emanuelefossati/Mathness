@@ -51,7 +51,7 @@ Result DivisionNode::GetResult() const
 	}
 
 
-	return std::get<scalar_t>(leftResult) * rightMatrix.Inverse();
+	return  rightMatrix.Inverse() * std::get<scalar_t>(leftResult);
 	
 }
 

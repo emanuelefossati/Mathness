@@ -62,7 +62,7 @@ struct List
 		return sum;
 	}
 
-	scalar_t Count() const
+	size_t Count() const
 	{
 		return Elements.size();
 	}
