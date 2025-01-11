@@ -5,19 +5,19 @@ Result DivisionNode::GetResult() const
 	auto leftResult = _Left->GetResult();
 	auto rightResult = _Right->GetResult();
 
-	if (std::holds_alternative<error_t>(leftResult))
+	if (IsError(leftResult))
 		return leftResult;
 
-	if (std::holds_alternative<error_t>(rightResult))	
+	if (IsError(rightResult))	
 		return rightResult;
 
-	if (std::holds_alternative<List>(leftResult) || std::holds_alternative<List>(rightResult))
+	if (IsList(leftResult) || IsList(rightResult))
 		return error_t("Cannot perform division with lists");
 
-	if (AreBothScalars(leftResult, rightResult))
+	if (IsScalar(leftResult) && IsScalar(rightResult))
 	{
-		scalar_t leftScalar = std::get<scalar_t>(leftResult);
-		scalar_t rightScalar = std::get<scalar_t>(rightResult);
+		scalar_t leftScalar = ResultToScalar(leftResult);
+		scalar_t rightScalar = ResultToScalar(rightResult);
 
 		if (rightScalar == 0)
 			return error_t("Division by zero");
@@ -27,8 +27,8 @@ Result DivisionNode::GetResult() const
 
 	if (!IsMatrix(rightResult))
 	{
-		scalar_t rightScalar = std::get<scalar_t>(rightResult);
-		Matrix leftMatrix = std::get<Matrix>(leftResult);
+		scalar_t rightScalar = ResultToScalar(rightResult);
+		Matrix leftMatrix = ResultToMatrix(leftResult);
 
 		if (rightScalar == 0)
 			return error_t("Division by zero");
@@ -36,7 +36,7 @@ Result DivisionNode::GetResult() const
 		return leftMatrix / rightScalar;
 	}
 
-	Matrix rightMatrix = std::get<Matrix>(rightResult);
+	Matrix rightMatrix = ResultToMatrix(rightResult);
 
 	if(!rightMatrix.IsSquare())
 		return error_t("Cannot perform division because divisor matrix is not square");
@@ -45,13 +45,12 @@ Result DivisionNode::GetResult() const
 		return error_t("Cannot perform division because divisor matrix is singular");
 	
 
-	if (AreBothMatrices(leftResult, rightResult))
+	if (IsMatrix(leftResult) && IsMatrix (rightResult))
 	{
-		return GetMatrixDivision(std::get<Matrix>(leftResult), std::get<Matrix>(rightResult));
+		return GetMatrixDivision(ResultToMatrix(leftResult), ResultToMatrix(rightResult));
 	}
 
-
-	return  rightMatrix.Inverse() * std::get<scalar_t>(leftResult);
+	return  rightMatrix.Inverse() * ResultToMatrix(leftResult);
 	
 }
 

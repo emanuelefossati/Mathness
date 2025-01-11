@@ -11,13 +11,14 @@ struct Matrix
 	size_t Rows = 0;
 	size_t Columns = 0;
 
-	const scalar_t& operator()(size_t i, size_t j) const;
+	const scalar_t operator()(size_t i, size_t j) const;
 	const Matrix operator+(const Matrix& other) const;
 	const Matrix operator-(const Matrix& other) const;
 	const Matrix operator*(scalar_t scalar) const;
 	const Matrix operator*(const Matrix& other) const;
 	const Matrix operator/(scalar_t scalar) const;
 	const Matrix operator/(const Matrix& other) const;
+	const Matrix operator^(scalar_t exponent) const;
 
 	const Matrix Transpose() const;
 	const Matrix Inverse() const;
@@ -34,7 +35,8 @@ struct Matrix
 	constexpr bool IsSquare() const;
 	constexpr bool IsIdentity() const;
 	constexpr bool IsDiagonal() const;
-	constexpr bool IsSingular() const;
+	bool IsSingular() const;
 
 	const std::string ToString() const;
+	static const Matrix Identity(size_t size);
 };

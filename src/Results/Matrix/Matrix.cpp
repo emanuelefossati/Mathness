@@ -1,6 +1,6 @@
 #include "Matrix.h"
 
-const scalar_t& Matrix::operator()(size_t i, size_t j) const
+const scalar_t Matrix::operator()(size_t i, size_t j) const
 {
 	return Elements[i * Columns + j];
 }
@@ -67,7 +67,7 @@ const Matrix Matrix::operator*(const Matrix& other) const
 
 const Matrix Matrix::operator/(scalar_t scalar) const
 {
-	return *this * (1 / scalar);
+	return (*this) * (1 / scalar);
 }
 
 const Matrix Matrix::operator/(const Matrix& other) const
@@ -76,6 +76,22 @@ const Matrix Matrix::operator/(const Matrix& other) const
 	assert(other.IsSquare());
 
 	return *this * other.Inverse();
+}
+
+const Matrix Matrix::operator^(scalar_t exponent) const
+{
+	assert(IsSquare());
+	assert(exponent >= 0);
+
+	// Check if the exponent is an integer
+	assert(std::floor(exponent) == exponent);
+
+	Matrix result = *this;
+
+	for (size_t i = 0; i < exponent - 1; i++)
+		result = result * (*this);
+
+	return result;
 }
 
 const Matrix Matrix::Transpose() const
@@ -212,7 +228,7 @@ constexpr bool Matrix::IsDiagonal() const
 	return true;
 }
 
-constexpr bool Matrix::IsSingular() const
+bool Matrix::IsSingular() const
 {
 	assert(IsSquare());
 
@@ -300,6 +316,27 @@ const std::string Matrix::ToString() const
 	}
 
 	result += "]";
+
+	return result;
+}
+
+const Matrix Matrix::Identity(size_t size)
+{
+	Matrix result;
+
+	result.Rows = size;
+	result.Columns = size;
+
+	for (size_t i = 0; i < size; i++)
+	{
+		for (size_t j = 0; j < size; j++)
+		{
+			if (i == j)
+				result.Elements.emplace_back(1);
+			else
+				result.Elements.emplace_back(0);
+		}
+	}
 
 	return result;
 }

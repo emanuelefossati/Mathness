@@ -3,30 +3,30 @@
 Result ProductNode::GetResult() const
 {
 	Result leftResult = _Left->GetResult();
-
-	if (std::holds_alternative<error_t>(leftResult))
-		return leftResult;
-
 	Result rightResult = _Right->GetResult();
 
-	if (std::holds_alternative<error_t>(rightResult))
+	if (IsError(leftResult))
+		return leftResult;
+
+
+	if (IsError(rightResult))
 		return rightResult;
 
-	if (std::holds_alternative<List>(leftResult) || std::holds_alternative<List>(rightResult))
+	if (IsList(leftResult) || IsList(rightResult))
 		return error_t("Cannot perform product with lists");
 
-	if (AreBothScalars(leftResult, rightResult))
+	if (IsScalar(leftResult) && IsScalar(rightResult))
 	{
-		scalar_t leftScalar = std::get<scalar_t>(leftResult);
-		scalar_t rightScalar = std::get<scalar_t>(rightResult);
+		scalar_t leftScalar = ResultToScalar(leftResult);
+		scalar_t rightScalar = ResultToScalar(rightResult);
 
 		return leftScalar * rightScalar;
 	}
 
-	if (AreBothMatrices(leftResult, rightResult))
+	if (IsMatrix(leftResult) && IsMatrix(rightResult))
 	{
-		Matrix leftMatrix = std::get<Matrix>(leftResult);
-		Matrix rightMatrix = std::get<Matrix>(rightResult);
+		Matrix leftMatrix = ResultToMatrix(leftResult);
+		Matrix rightMatrix = ResultToMatrix(rightResult);
 
 		if (!CanMatricesBeMultiplied(leftMatrix, rightMatrix))
 			return error_t("Cannot multiply matrices with incompatible dimensions");

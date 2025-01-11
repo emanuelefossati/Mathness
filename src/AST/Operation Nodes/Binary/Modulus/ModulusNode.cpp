@@ -5,15 +5,19 @@ Result ModulusNode::GetResult() const
 	auto left = _Left->GetResult();
 	auto right = _Right->GetResult();
 
-	if (std::holds_alternative<error_t>(left))
+	if (IsError(left))
 		return left;
 
-	if (std::holds_alternative<error_t>(right))
+	if (IsError(right))
 		return right;
 
 	if (!IsScalar(left) || !IsScalar(right))
 		return error_t("cannot perform modulus operation on non-scalar types");
 
-	return std::get<scalar_t>(left) % std::get<scalar_t>(right);
+	if (!IsScalarInteger(ResultToScalar(left)) || !IsScalarInteger(ResultToScalar(right)))
+		return error_t("cannot perform modulus operation on non-integer scalars");
+
+	scalar_t result = lround(ResultToScalar(left)) % lround(ResultToScalar(right));
+	return result;
 
 }

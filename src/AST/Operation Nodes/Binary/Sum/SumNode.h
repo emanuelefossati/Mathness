@@ -21,9 +21,6 @@ public:
 
 private:
 	static bool CanMatricesBeSummed(const Matrix& left, const Matrix& right);
-	Result SumMatrices(const Matrix& left, const Matrix& right) const; 
 
 	AlgebraicSumOperation _Operation;
 };
-
-

@@ -67,7 +67,7 @@ struct List
 		return Elements.size();
 	}
 
-	List Set() const
+	List&& Set() const
 	{
 		List result;
 
@@ -77,8 +77,7 @@ struct List
 				result.Elements.push_back(element);
 		}
 
-		return result;
-
+		return std::move(result);
 	}
 
 

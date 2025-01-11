@@ -5,17 +5,17 @@ Result LogNode::GetResult() const
 	auto left = _Left->GetResult();
 	auto right = _Right->GetResult();
 
-	if (std::holds_alternative<error_t>(left))
+	if (IsError(left))
 		return left;
 
-	if (std::holds_alternative<error_t>(right))
+	if (IsError(right))
 		return right;
 
 	if (!IsScalar(left) || !IsScalar(right))
 		return error_t("cannot perform log operation on non-scalar types");
 
-	scalar_t base = std::get<scalar_t>(left);
-	scalar_t argument = std::get<scalar_t>(right);
+	scalar_t base = ResultToScalar(left);
+	scalar_t argument = ResultToScalar(right);
 
 	if (argument == 0)
 		return error_t("cannot perform log operation if the argument is 0");
