@@ -274,8 +274,6 @@ const Matrix Matrix::Cross(const Matrix& other) const
 
 const scalar_t Matrix::Norm() const
 {
-	assert(IsVector());
-
 	scalar_t result = 0;
 
 	for (auto& element : Elements)
