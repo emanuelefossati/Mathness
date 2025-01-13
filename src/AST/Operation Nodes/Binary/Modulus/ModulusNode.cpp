@@ -5,19 +5,19 @@ Result ModulusNode::GetResult() const
 	auto left = _Left->GetResult();
 	auto right = _Right->GetResult();
 
-	if (IsError(left))
+	if (left.IsError())
 		return left;
 
-	if (IsError(right))
+	if (right.IsError())
 		return right;
 
-	if (!IsScalar(left) || !IsScalar(right))
+	if (!left.IsScalar() || !right.IsScalar())
 		return error_t("cannot perform modulus operation on non-scalar types");
 
-	if (!IsScalarInteger(ResultToScalar(left)) || !IsScalarInteger(ResultToScalar(right)))
+	if (!left.IsScalarInteger() || !right.IsScalarInteger())
 		return error_t("cannot perform modulus operation on non-integer scalars");
 
-	scalar_t result = lround(ResultToScalar(left)) % lround(ResultToScalar(right));
+	scalar_t result = lround(left.ToScalar()) % lround(right.ToScalar());
 	return result;
 
 }

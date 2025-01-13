@@ -10,5 +10,5 @@ public:
 	Result GetResult() const override;
 
 private:
-	scalar_t Factorial(scalar_t value) const;
+	scalar_t Factorial(scalar_t n) const;
 };

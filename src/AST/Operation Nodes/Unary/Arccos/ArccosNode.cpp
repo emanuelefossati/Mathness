@@ -4,11 +4,11 @@ Result ArccosNode::GetResult() const
 {
 	Result childResult = _Child->GetResult();
 
-	if (IsError(childResult))
+	if (childResult.IsError())
 		return childResult;
 
-	if (!IsScalar(childResult))
+	if (!childResult.IsScalar())
 		return error_t("Arccos function can only be applied to scalars");
 
-	return std::acos(ResultToScalar(childResult));
+	return std::acos(childResult.ToScalar());
 }

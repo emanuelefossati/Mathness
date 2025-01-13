@@ -5,28 +5,28 @@ Result ProductNode::GetResult() const
 	Result leftResult = _Left->GetResult();
 	Result rightResult = _Right->GetResult();
 
-	if (IsError(leftResult))
+	if (leftResult.IsError())
 		return leftResult;
 
 
-	if (IsError(rightResult))
+	if (rightResult.IsError())
 		return rightResult;
 
-	if (IsList(leftResult) || IsList(rightResult))
+	if (leftResult.IsList() || rightResult.IsList())
 		return error_t("Cannot perform product with lists");
 
-	if (IsScalar(leftResult) && IsScalar(rightResult))
+	if (leftResult.IsScalar() && rightResult.IsScalar())
 	{
-		scalar_t leftScalar = ResultToScalar(leftResult);
-		scalar_t rightScalar = ResultToScalar(rightResult);
+		scalar_t leftScalar = leftResult.ToScalar();
+		scalar_t rightScalar = rightResult.ToScalar();
 
 		return leftScalar * rightScalar;
 	}
 
-	if (IsMatrix(leftResult) && IsMatrix(rightResult))
+	if (leftResult.IsMatrix() && rightResult.IsMatrix())
 	{
-		Matrix leftMatrix = ResultToMatrix(leftResult);
-		Matrix rightMatrix = ResultToMatrix(rightResult);
+		Matrix leftMatrix = leftResult.ToMatrix();
+		Matrix rightMatrix = rightResult.ToMatrix();
 
 		if (!CanMatricesBeMultiplied(leftMatrix, rightMatrix))
 			return error_t("Cannot multiply matrices with incompatible dimensions");
@@ -41,7 +41,7 @@ Result ProductNode::GetResult() const
 	}
 
 	// Scalar * Matrix
-	auto [scalar, matrix] = RetrieveScalarAndMatrix(leftResult, rightResult);
+	auto [scalar, matrix] = Result::RetrieveScalarAndMatrix(leftResult, rightResult);
 
 	return matrix * scalar;
 }

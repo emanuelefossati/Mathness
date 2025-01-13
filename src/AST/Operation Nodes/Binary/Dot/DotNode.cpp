@@ -5,17 +5,17 @@ Result DotNode::GetResult() const
 	auto left = _Left->GetResult();
 	auto right = _Right->GetResult();
 
-	if (IsError(left))
+	if (left.IsError())
 		return left;
 
-	if (IsError(right))
+	if (right.IsError())
 		return right;
 
-	if (!IsMatrix(left) || !IsMatrix(right))
+	if (!left.IsMatrix() || !right.IsMatrix())
 		return error_t("cannot perform dot operation on non-vector types");
 
-	Matrix leftMatrix = ResultToMatrix(left);
-	Matrix rightMatrix = ResultToMatrix(right);
+	Matrix leftMatrix = left.ToMatrix();
+	Matrix rightMatrix = right.ToMatrix();
 
 	if (!leftMatrix.IsVector() || !rightMatrix.IsVector())
 		return error_t("cannot perform dot operation on non-vector types");

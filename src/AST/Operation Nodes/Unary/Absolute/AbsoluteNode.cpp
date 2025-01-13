@@ -7,12 +7,12 @@ Result AbsoluteNode::GetResult() const
 	if (childResult.IsError())
 		return childResult;
 
-	if(IsList(childResult))
+	if(childResult.IsList())
 		return error_t("Cannot take the absolute value of a list");
 
-	if (IsScalar(childResult))
-		return abs(ResultToScalar(childResult));
+	if (childResult.IsScalar())
+		return abs(childResult.ToScalar());
 
-	if (IsMatrix(childResult))
-		return ResultToMatrix(childResult).Norm();
+	if (childResult.IsMatrix())
+		return childResult.ToMatrix().Norm();
 }

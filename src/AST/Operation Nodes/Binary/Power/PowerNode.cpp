@@ -5,30 +5,31 @@ Result PowerNode::GetResult() const
 	Result leftResult = _Left->GetResult();
 	Result rightResult = _Right->GetResult();
 
-	if (IsError(leftResult))
+	if (leftResult.IsError())
 		return leftResult;
 
-	if (IsError(rightResult))
+	if (rightResult.IsError())
 		return rightResult;
 
-	if (IsList(leftResult))
+	if (leftResult.IsList() || rightResult.IsList())
 		return error_t("Cannot perform power with lists");
 
-	if (!IsScalar(rightResult))
+	if (!rightResult.IsScalar())
 		return error_t("Exponent must be a scalar");
+
+	scalar_t exponent = rightResult.ToScalar();
 	
-	if (IsScalar(leftResult))
-		return std::pow(ResultToScalar(leftResult), ResultToScalar(rightResult));
+	if (leftResult.IsScalar())
+		return std::pow(leftResult.ToScalar(), exponent);
 
 	//Base is a matrix
 
-	Matrix base = ResultToMatrix(leftResult);
-	scalar_t exponent = ResultToScalar(rightResult);
-
+	Matrix base = leftResult.ToMatrix();
+	
 	if(!base.IsSquare())
 		return error_t("Matrix must be square to perform power");
 
-	if (exponent < 0 || !IsScalarInteger(exponent))
+	if (!Result::IsScalarInteger(exponent))
 		return error_t("Exponent must be a non-negative integer");
 
 	if (exponent == 0)

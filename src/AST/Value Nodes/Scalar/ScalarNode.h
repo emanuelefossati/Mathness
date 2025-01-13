@@ -9,6 +9,6 @@ public:
 
 	Result GetResult() const override { return scalar_t{ _Value }; }
 private:
-	double _Value;
+	scalar_t _Value;
 
 };

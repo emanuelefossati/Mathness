@@ -6,69 +6,87 @@
 #include <variant>
 #include <tuple>
 
-using Result = std::variant<scalar_t, Matrix, List, error_t>;
-
-constexpr bool IsScalar(const Result& result)
+struct Result : public std::variant<scalar_t, Matrix, List, error_t>
 {
-	return std::holds_alternative<scalar_t>(result);
-}
+	using std::variant<scalar_t, Matrix, List, error_t>::variant;
 
-constexpr bool IsMatrix(const Result& result)
-{
-	return std::holds_alternative<Matrix>(result);
-}
-
-constexpr bool IsList(const Result& result)
-{
-	return std::holds_alternative<List>(result);
-}
-
-constexpr bool IsError(const Result& result)
-{
-	return std::holds_alternative<error_t>(result);
-}
-
-static bool IsScalarInteger(const scalar_t & scalar)
-{
-	return scalar == std::floor(scalar);
-}
-
-constexpr scalar_t ResultToScalar(const Result& result)
-{
-	assert(IsScalar(result));
-	return std::get<scalar_t>(result);
-}
-
-constexpr Matrix ResultToMatrix(const Result& result)
-{
-	assert(IsMatrix(result));
-	return std::get<Matrix>(result);
-}
-
-constexpr List ResultToList(const Result& result)
-{
-	assert(IsList(result));
-	return std::get<List>(result);
-}
-
-
-constexpr std::tuple<scalar_t, Matrix> RetrieveScalarAndMatrix(const Result& leftResult, const Result& rightResult)
-{
-	assert(IsScalar(leftResult) != IsScalar(rightResult));
-	assert(IsMatrix(leftResult) != IsMatrix(rightResult));
-
-	if (IsScalar(leftResult))
+	constexpr bool IsScalar() const
 	{
-		scalar_t leftScalar = ResultToScalar(leftResult);
-		Matrix rightMatrix = ResultToMatrix(rightResult);
-
-		return { leftScalar, rightMatrix };
+		return std::holds_alternative<scalar_t>(*this);
 	}
-	else
+
+	constexpr bool IsMatrix() const
 	{
-		Matrix leftMatrix = ResultToMatrix(leftResult);
-		scalar_t rightScalar = ResultToScalar(rightResult);
-
-		return { rightScalar, leftMatrix };
+		return std::holds_alternative<Matrix>(*this);
 	}
-}
+
+	constexpr bool IsList() const
+	{
+		return std::holds_alternative<List>(*this);
+	}
+
+	constexpr bool IsError() const
+	{
+		return std::holds_alternative<error_t>(*this);
+	}
+
+	bool IsScalarInteger() const
+	{
+		assert(IsScalar());
+
+		scalar_t value = ToScalar();
+
+		return value == std::floor(value);
+	}
+	static bool IsScalarInteger(const Result& result)
+	{
+		assert(result.IsScalar());
+
+		scalar_t value = result.ToScalar();
+
+		return value == std::floor(value);
+	}
+
+	constexpr scalar_t ToScalar() const
+	{
+		assert(IsScalar());
+		return std::get<scalar_t>(*this);
+	}
+
+	constexpr Matrix ToMatrix() const
+	{
+		assert(IsMatrix());
+		return std::get<Matrix>(*this);
+	}
+
+	constexpr List ToList() const
+	{
+		assert(IsList());
+		return std::get<List>(*this);
+	}
+
+
+	static constexpr std::tuple<scalar_t, Matrix> RetrieveScalarAndMatrix(const Result& leftResult, const Result& rightResult)
+	{
+		assert(leftResult.IsScalar() != rightResult.IsScalar());
+		assert(leftResult.IsMatrix() != rightResult.IsMatrix());
+
+		if (leftResult.IsScalar())
+		{
+			scalar_t leftScalar = leftResult.ToScalar();
+			Matrix rightMatrix = rightResult.ToMatrix();
+
+			return { leftScalar, rightMatrix };
+		}
+		else
+		{
+			Matrix leftMatrix = leftResult.ToMatrix();
+			scalar_t rightScalar = rightResult.ToScalar();
+
+			return { rightScalar, leftMatrix };
+		}
+	}
+};
+
+
+

@@ -81,15 +81,18 @@ const Matrix Matrix::operator/(const Matrix& other) const
 const Matrix Matrix::operator^(scalar_t exponent) const
 {
 	assert(IsSquare());
-	assert(exponent >= 0);
 
 	// Check if the exponent is an integer
 	assert(std::floor(exponent) == exponent);
 
 	Matrix result = *this;
+	scalar_t exponent_abs = std::abs(exponent);
 
-	for (size_t i = 0; i < exponent - 1; i++)
+	for (size_t i = 0; i < exponent_abs - 1; i++)
 		result = result * (*this);
+
+	if (exponent < 0)
+		result = result.Inverse();
 
 	return result;
 }

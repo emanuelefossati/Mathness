@@ -4,16 +4,16 @@ Result LnNode::GetResult() const
 {
 	Result childResult = _Child->GetResult();
 
-	if (IsError(childResult))
+	if (childResult.IsError())
 		return childResult;
 
-	if (!IsScalar(childResult))
+	if (!childResult.IsScalar())
 		return error_t("Ln function can only be applied to scalars");
 
-	scalar_t value = ResultToScalar(childResult);
+	scalar_t value = childResult.ToScalar();
 
 	if(value <= 0)
 		return error_t("Ln function can only be applied to positive numbers");
 
-	return std::log(ResultToScalar(childResult));
+	return std::log(value);
 }

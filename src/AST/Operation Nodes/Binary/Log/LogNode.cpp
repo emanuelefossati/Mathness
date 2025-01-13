@@ -5,17 +5,17 @@ Result LogNode::GetResult() const
 	auto left = _Left->GetResult();
 	auto right = _Right->GetResult();
 
-	if (IsError(left))
+	if (left.IsError())
 		return left;
 
-	if (IsError(right))
+	if (right.IsError())
 		return right;
 
-	if (!IsScalar(left) || !IsScalar(right))
+	if (!left.IsScalar() || !right.IsScalar())
 		return error_t("cannot perform log operation on non-scalar types");
 
-	scalar_t base = ResultToScalar(left);
-	scalar_t argument = ResultToScalar(right);
+	scalar_t base = left.ToScalar();
+	scalar_t argument = right.ToScalar();
 
 	if (argument == 0)
 		return error_t("cannot perform log operation if the argument is 0");

@@ -5,29 +5,29 @@ Result AlgebraicSumNode::GetResult() const
 {
 	Result leftResult = _Left->GetResult();
 
-	if (IsError(leftResult))
+	if (leftResult.IsError())
 		return leftResult;
 
 	Result rightResult = _Right->GetResult();
 
-	if (IsError(rightResult))
+	if (rightResult.IsError())
 		return rightResult;
 
-	if (IsList(leftResult) || IsList(rightResult))
+	if (leftResult.IsList() || rightResult.IsList())
 		return error_t("Cannot perform sum with lists");
 
-	if (IsScalar(leftResult) && IsScalar(rightResult))
+	if (leftResult.IsScalar() && rightResult.IsScalar())
 	{
-		scalar_t leftScalar = ResultToScalar(leftResult);
-		scalar_t rightScalar = ResultToScalar(rightResult);
+		scalar_t leftScalar = leftResult.ToScalar();
+		scalar_t rightScalar = rightResult.ToScalar();
 
 		return (_Operation == AlgebraicSumOperation::ADD) ? leftScalar + rightScalar : leftScalar - rightScalar;
 	}
 
-	if (IsMatrix(leftResult) && IsMatrix(rightResult))
+	if (leftResult.IsMatrix() && rightResult.IsMatrix())
 	{
-		Matrix leftMatrix = ResultToMatrix(leftResult);
-		Matrix rightMatrix = ResultToMatrix(rightResult);
+		Matrix leftMatrix = leftResult.ToMatrix();
+		Matrix rightMatrix = rightResult.ToMatrix();
 
 		if (!CanMatricesBeSummed(leftMatrix, rightMatrix))
 			return error_t("Cannot add matrices with different dimensions");

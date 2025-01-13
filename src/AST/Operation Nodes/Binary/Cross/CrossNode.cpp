@@ -5,17 +5,17 @@ Result CrossNode::GetResult() const
 	auto leftResult = _Left->GetResult();
 	auto rightResult = _Right->GetResult();
 
-	if (IsError(leftResult))
+	if (leftResult.IsError())
 		return leftResult;
 
-	if (IsError(rightResult))
+	if (rightResult.IsError())
 		return rightResult;
 
-	if (!IsMatrix(leftResult) || !IsMatrix(rightResult))
+	if (!leftResult.IsMatrix() || !rightResult.IsMatrix())
 		return error_t("cross product is only defined for vectors");
 
-	Matrix leftMatrix = ResultToMatrix(leftResult);
-	Matrix rightMatrix = ResultToMatrix(rightResult);
+	Matrix leftMatrix = leftResult.ToMatrix();
+	Matrix rightMatrix = rightResult.ToMatrix();
 
 	if (!leftMatrix.IsVector() || !rightMatrix.IsVector())
 		return error_t("cross product is only defined for vectors");

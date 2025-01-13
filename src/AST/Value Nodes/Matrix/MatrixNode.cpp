@@ -26,12 +26,12 @@ Result MatrixNode::GetResult() const
 
 		auto result = element->GetResult();
 
-		if (std::holds_alternative<error_t>(result))
+		if (result.IsError())
 			return result;
 
-		if (std::holds_alternative<scalar_t>(result))
+		if (result.IsScalar())
 		{
-			auto scalar = std::get<scalar_t>(result);
+			auto scalar = result.ToScalar();
 			matrix.Elements.push_back(scalar);
 		}
 

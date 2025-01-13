@@ -17,13 +17,13 @@ Result ListNode::GetResult() const
 		auto& element = _Elements[i];
 		auto result = element->GetResult();
 
-		if (std::holds_alternative<error_t>(result))
+		if (result.IsError())
 			return result;
 
 
-		if (std::holds_alternative<scalar_t>(result))
+		if (result.IsScalar())
 		{
-			scalar_t scalar = std::get<scalar_t>(result);
+			scalar_t scalar = result.ToScalar();
 			list.Elements.emplace_back(scalar);
 		}
 

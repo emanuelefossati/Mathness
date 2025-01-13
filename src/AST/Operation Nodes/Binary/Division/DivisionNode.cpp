@@ -5,19 +5,19 @@ Result DivisionNode::GetResult() const
 	auto leftResult = _Left->GetResult();
 	auto rightResult = _Right->GetResult();
 
-	if (IsError(leftResult))
+	if (leftResult.IsError())
 		return leftResult;
 
-	if (IsError(rightResult))	
+	if (rightResult.IsError())	
 		return rightResult;
 
-	if (IsList(leftResult) || IsList(rightResult))
+	if (leftResult.IsList() || rightResult.IsList())
 		return error_t("Cannot perform division with lists");
 
-	if (IsScalar(leftResult) && IsScalar(rightResult))
+	if (leftResult.IsScalar() && rightResult.IsScalar())
 	{
-		scalar_t leftScalar = ResultToScalar(leftResult);
-		scalar_t rightScalar = ResultToScalar(rightResult);
+		scalar_t leftScalar = leftResult.ToScalar();
+		scalar_t rightScalar = rightResult.ToScalar();
 
 		if (rightScalar == 0)
 			return error_t("Division by zero");
@@ -25,10 +25,10 @@ Result DivisionNode::GetResult() const
 		return leftScalar / rightScalar;
 	}
 
-	if (!IsMatrix(rightResult))
+	if (!rightResult.IsMatrix())
 	{
-		scalar_t rightScalar = ResultToScalar(rightResult);
-		Matrix leftMatrix = ResultToMatrix(leftResult);
+		scalar_t rightScalar = rightResult.ToScalar();
+		Matrix leftMatrix = leftResult.ToMatrix();
 
 		if (rightScalar == 0)
 			return error_t("Division by zero");
@@ -36,7 +36,7 @@ Result DivisionNode::GetResult() const
 		return leftMatrix / rightScalar;
 	}
 
-	Matrix rightMatrix = ResultToMatrix(rightResult);
+	Matrix rightMatrix = rightResult.ToMatrix();
 
 	if(!rightMatrix.IsSquare())
 		return error_t("Cannot perform division because divisor matrix is not square");
@@ -45,12 +45,12 @@ Result DivisionNode::GetResult() const
 		return error_t("Cannot perform division because divisor matrix is singular");
 	
 
-	if (IsMatrix(leftResult) && IsMatrix (rightResult))
+	if (leftResult.IsMatrix() && rightResult.IsMatrix())
 	{
-		return GetMatrixDivision(ResultToMatrix(leftResult), ResultToMatrix(rightResult));
+		return GetMatrixDivision(leftResult.ToMatrix(), rightResult.ToMatrix());
 	}
 
-	return  rightMatrix.Inverse() * ResultToMatrix(leftResult);
+	return  rightMatrix.Inverse() * leftResult.ToScalar();
 	
 }
 
