@@ -29,8 +29,8 @@ private:
 
 	void Init();
 
-	std::optional<error_t> CheckAssignment();
-	std::optional<error_t> CheckBrackets(std::vector<LexingToken>& lexingTokens);
+	std::optional<Error> CheckAssignment();
+	std::optional<Error> CheckBrackets(std::vector<LexingToken>& lexingTokens);
 	
 	void BuildTree();
 

@@ -8,7 +8,7 @@ Result CosNode::GetResult() const
 		return childResult;
 
 	if (!childResult.IsScalar())
-		return error_t("Cosin function can only be applied to scalars");
+		return Error("Cosin function can only be applied to scalars", _TokenRange);
 
 	return std::cos(childResult.ToScalar());
 }

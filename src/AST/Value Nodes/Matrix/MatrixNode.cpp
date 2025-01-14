@@ -1,12 +1,7 @@
 #include "MatrixNode.h"
 
-size_t MatrixNode::_Count = 0;
-
 MatrixNode::MatrixNode()
 {
-	_Id = _Count;
-	_Count++;
-
 	_Rows = 0;
 	_Columns = 0;
 }
@@ -36,7 +31,7 @@ Result MatrixNode::GetResult() const
 		}
 
 		else
-			return error_t(std::format("cannot resolve element inside matrix #{} at ({};{})", _Id, currentRow, currentColumn));
+			return Error(std::format("cannot resolve element inside matrix"), _TokenRange);
 	}
 
 	if(matrix.Elements.size() == 1)

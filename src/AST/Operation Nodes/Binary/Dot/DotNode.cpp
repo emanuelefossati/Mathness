@@ -12,16 +12,16 @@ Result DotNode::GetResult() const
 		return right;
 
 	if (!left.IsMatrix() || !right.IsMatrix())
-		return error_t("cannot perform dot operation on non-vector types");
+		return Error("cannot perform dot operation on non-vector types", _TokenRange);
 
 	Matrix leftMatrix = left.ToMatrix();
 	Matrix rightMatrix = right.ToMatrix();
 
 	if (!leftMatrix.IsVector() || !rightMatrix.IsVector())
-		return error_t("cannot perform dot operation on non-vector types");
+		return Error("cannot perform dot operation on non-vector types", _TokenRange);
 
 	if (leftMatrix.Elements.size() != rightMatrix.Elements.size())
-		return error_t("cannot perform dot operation on vectors of different sizes");
+		return Error("cannot perform dot operation on vectors of different sizes", _TokenRange);
 
 	return leftMatrix.Dot(rightMatrix);
 }

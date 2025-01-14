@@ -12,10 +12,10 @@ Result ModulusNode::GetResult() const
 		return right;
 
 	if (!left.IsScalar() || !right.IsScalar())
-		return error_t("cannot perform modulus operation on non-scalar types");
+		return Error("cannot perform modulus operation on non-scalar types", _TokenRange);
 
 	if (!left.IsScalarInteger() || !right.IsScalarInteger())
-		return error_t("cannot perform modulus operation on non-integer scalars");
+		return Error("cannot perform modulus operation on non-integer scalars", _TokenRange);
 
 	scalar_t result = lround(left.ToScalar()) % lround(right.ToScalar());
 	return result;

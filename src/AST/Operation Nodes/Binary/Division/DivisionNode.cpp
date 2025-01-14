@@ -12,7 +12,7 @@ Result DivisionNode::GetResult() const
 		return rightResult;
 
 	if (leftResult.IsList() || rightResult.IsList())
-		return error_t("Cannot perform division with lists");
+		return Error("Cannot perform division with lists", _TokenRange);
 
 	if (leftResult.IsScalar() && rightResult.IsScalar())
 	{
@@ -20,7 +20,7 @@ Result DivisionNode::GetResult() const
 		scalar_t rightScalar = rightResult.ToScalar();
 
 		if (rightScalar == 0)
-			return error_t("Division by zero");
+			return Error("Division by zero", _TokenRange);
 
 		return leftScalar / rightScalar;
 	}
@@ -31,7 +31,7 @@ Result DivisionNode::GetResult() const
 		Matrix leftMatrix = leftResult.ToMatrix();
 
 		if (rightScalar == 0)
-			return error_t("Division by zero");
+			return Error("Division by zero", _TokenRange);
 
 		return leftMatrix / rightScalar;
 	}
@@ -39,10 +39,10 @@ Result DivisionNode::GetResult() const
 	Matrix rightMatrix = rightResult.ToMatrix();
 
 	if(!rightMatrix.IsSquare())
-		return error_t("Cannot perform division because divisor matrix is not square");
+		return Error("Cannot perform division because divisor matrix is not square", _TokenRange);
 
 	if (rightMatrix.IsSingular())
-		return error_t("Cannot perform division because divisor matrix is singular");
+		return Error("Cannot perform division because divisor matrix is singular", _TokenRange);
 	
 
 	if (leftResult.IsMatrix() && rightResult.IsMatrix())
@@ -57,10 +57,10 @@ Result DivisionNode::GetResult() const
 Result DivisionNode::GetMatrixDivision(const Matrix& left, const Matrix& right) const
 {
 	if (!left.IsSquare())
-		return error_t("Cannot perform division because dividend matrix is singular");
+		return Error("Cannot perform division because dividend matrix is singular", _TokenRange);
 
 	if (left.Rows != right.Rows)
-		return error_t("Both matrices must have the same size to perform division");
+		return Error("Both matrices must have the same size to perform division", _TokenRange);
 
 	return left * right.Inverse();
 }

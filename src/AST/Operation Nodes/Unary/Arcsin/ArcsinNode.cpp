@@ -8,7 +8,7 @@ Result ArcsinNode::GetResult() const
 		return childResult;
 
 	if (!childResult.IsScalar())
-		return error_t("Arcsin function can only be applied to scalars");
+		return Error("Arcsin function can only be applied to scalars", _TokenRange);
 
 	return std::asin(childResult.ToScalar());
 }

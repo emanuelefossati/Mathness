@@ -12,16 +12,16 @@ Result CrossNode::GetResult() const
 		return rightResult;
 
 	if (!leftResult.IsMatrix() || !rightResult.IsMatrix())
-		return error_t("cross product is only defined for vectors");
+		return Error("cross product is only defined for vectors", _TokenRange);
 
 	Matrix leftMatrix = leftResult.ToMatrix();
 	Matrix rightMatrix = rightResult.ToMatrix();
 
 	if (!leftMatrix.IsVector() || !rightMatrix.IsVector())
-		return error_t("cross product is only defined for vectors");
+		return Error("cross product is only defined for vectors", _TokenRange);
 
 	if (leftMatrix.Rows != 3 || rightMatrix.Rows != 3)
-		return error_t("cross product is only defined for vectors of size 3");
+		return Error("cross product is only defined for vectors of size 3", _TokenRange);
 
 	return leftMatrix.Cross(rightMatrix);
 }

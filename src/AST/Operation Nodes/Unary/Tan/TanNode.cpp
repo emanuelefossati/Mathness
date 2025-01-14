@@ -8,12 +8,12 @@ Result TanNode::GetResult() const
 		return childResult;
 
 	if (!childResult.IsScalar())
-		return error_t("Tan function can only be applied to scalars");
+		return Error("Tan function can only be applied to scalars", _TokenRange);
 
 	scalar_t value = childResult.ToScalar();
 
 	if (std::cos(value) == 0)
-		return error_t("Tan function is undefined at this point");
+		return Error("Tan function is undefined at this point", _TokenRange);
 
 	return std::tan(value);
 }

@@ -8,7 +8,7 @@ Result SinNode::GetResult() const
 		return childResult;
 
 	if (!childResult.IsScalar())
-		return error_t("Sin function can only be applied to scalars");
+		return Error("Sin function can only be applied to scalars", _TokenRange);
 
 	return std::sin(childResult.ToScalar());
 }

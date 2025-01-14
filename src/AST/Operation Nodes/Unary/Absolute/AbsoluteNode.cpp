@@ -8,11 +8,11 @@ Result AbsoluteNode::GetResult() const
 		return childResult;
 
 	if(childResult.IsList())
-		return error_t("Cannot take the absolute value of a list");
+		return Error("Cannot take the absolute value of a list", _TokenRange);
 
 	if (childResult.IsScalar())
 		return abs(childResult.ToScalar());
 
-	if (childResult.IsMatrix())
-		return childResult.ToMatrix().Norm();
+	
+	return childResult.ToMatrix().Norm();
 }

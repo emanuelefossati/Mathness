@@ -8,7 +8,7 @@ Result ArctanNode::GetResult() const
 		return childResult;
 
 	if (!childResult.IsScalar())
-		return error_t("Arctan function can only be applied to scalars");
+		return Error("Arctan function can only be applied to scalars", _TokenRange);
 
 	return std::atan(childResult.ToScalar());
 }

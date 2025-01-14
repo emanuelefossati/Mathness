@@ -8,12 +8,12 @@ Result SqrtNode::GetResult() const
 		return result;
 
 	if (!result.IsScalar())
-		return error_t("Sqrt function can only be applied to scalars");
+		return Error("Sqrt function can only be applied to scalars", _TokenRange);
 
 	scalar_t value = result.ToScalar();
 
 	if (value < 0)
-		return error_t("Sqrt function can only be applied to non-negative scalars");
+		return Error("Sqrt function can only be applied to non-negative scalars", _TokenRange);
 
 	return std::sqrt(value);
 }

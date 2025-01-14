@@ -16,8 +16,13 @@ public:
 	std::shared_ptr<INode> GetParent() const { return _Parent; }
 	void SetParent(std::shared_ptr<INode> parent) { _Parent = parent; }
 
+	Range GetRange() const { return _TokenRange; }
+	void SetRange(Range range) { _TokenRange = range; }
+
+
 protected:
 	std::shared_ptr<INode> _Parent = nullptr;
+	Range _TokenRange;
 };
 
 class IBinaryNode : public INode

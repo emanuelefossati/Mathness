@@ -30,7 +30,7 @@ void Parser::Init()
 	_LValue = std::nullopt;
 }
 
-std::optional<error_t> Parser::CheckBrackets(std::vector<LexingToken>& lexingTokens)
+std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingTokens)
 {
 	int currentRoundDepth = 0;
 	int currentSquareDepth = 0;
@@ -58,13 +58,13 @@ std::optional<error_t> Parser::CheckBrackets(std::vector<LexingToken>& lexingTok
 
 
 		if (currentRoundDepth < 0)
-			return error_t("Invalid round bracket setting");
+			return Error("Invalid round bracket setting");
 		
 		else if (currentSquareDepth < 0)
-			return error_t("Invalid square bracket setting");
+			return Error("Invalid square bracket setting");
 
 		else if (currentCurlyDepth < 0)
-			return error_t("Invalid curly bracket setting");
+			return Error("Invalid curly bracket setting");
 
 		
 		if (token.Type != TokenType::OPEN_ROUND_BRACKET && token.Type != TokenType::CLOSE_ROUND_BRACKET)
@@ -73,18 +73,18 @@ std::optional<error_t> Parser::CheckBrackets(std::vector<LexingToken>& lexingTok
 	}
 
 	if (currentRoundDepth != 0)
-		return error_t("Invalid round bracket setting");
+		return Error("Invalid round bracket setting");
 
 	else if (currentSquareDepth != 0)
-		return error_t("Invalid square bracket setting");
+		return Error("Invalid square bracket setting");
 
 	else if (currentCurlyDepth != 0)
-		return error_t("Invalid curly bracket setting");
+		return Error("Invalid curly bracket setting");
 
 	return std::nullopt;
 }
 
-std::optional<error_t> Parser::CheckAssignment()
+std::optional<Error> Parser::CheckAssignment()
 {
 	int assignmentIndex = -1;
 	int assignmentCount = 0;
@@ -99,7 +99,7 @@ std::optional<error_t> Parser::CheckAssignment()
 	}
 
 	if (assignmentCount > 1)
-		return error_t("Multiple assignments found");
+		return Error("Multiple assignments found");
 
 	if (assignmentCount == 0)
 		return std::nullopt;
@@ -107,10 +107,10 @@ std::optional<error_t> Parser::CheckAssignment()
 	// One assignment found
 
 	if (assignmentIndex != 1)
-		return error_t("Invalid assignment position");
+		return Error("Invalid assignment position");
 
 	if (_Tokens[0].Type != TokenType::STORAGE)
-		return error_t("Expected an identifier before assignment");
+		return Error("Expected an identifier before assignment");
 
 	_LValue = _Tokens[0].Value;
 

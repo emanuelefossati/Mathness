@@ -1,13 +1,5 @@
 #include "ListNode.h"
 
-size_t ListNode::_Count = 0;
-
-ListNode::ListNode()
-{
-	_Id = _Count;
-	_Count++;
-}
-
 Result ListNode::GetResult() const
 {
 	List list;
@@ -28,7 +20,7 @@ Result ListNode::GetResult() const
 		}
 
 		else
-			return error_t(std::format("cannot resolve element inside list #{}, at index {}", _Id, i));
+			return Error(std::format("cannot resolve element inside list"), _TokenRange);
 	}
 
 	return list;

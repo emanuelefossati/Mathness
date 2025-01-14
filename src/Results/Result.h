@@ -6,9 +6,9 @@
 #include <variant>
 #include <tuple>
 
-struct Result : public std::variant<scalar_t, Matrix, List, error_t>
+struct Result : public std::variant<scalar_t, Matrix, List, Error>
 {
-	using std::variant<scalar_t, Matrix, List, error_t>::variant;
+	using std::variant<scalar_t, Matrix, List, Error>::variant;
 
 	constexpr bool IsScalar() const
 	{
@@ -27,7 +27,7 @@ struct Result : public std::variant<scalar_t, Matrix, List, error_t>
 
 	constexpr bool IsError() const
 	{
-		return std::holds_alternative<error_t>(*this);
+		return std::holds_alternative<Error>(*this);
 	}
 
 	bool IsScalarInteger() const

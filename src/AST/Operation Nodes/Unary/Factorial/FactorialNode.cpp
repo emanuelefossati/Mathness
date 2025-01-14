@@ -8,12 +8,12 @@ Result FactorialNode::GetResult() const
 		return childResult;
 
 	if (!childResult.IsScalar())
-		return error_t("Factorial function can only be applied to scalars");
+		return Error("Factorial function can only be applied to scalars", _TokenRange);
 
 	scalar_t value = childResult.ToScalar();
 
 	if (value < 0 || Result::IsScalarInteger(value))
-		return error_t("Factorial function can only be applied to non-negative integers");
+		return Error("Factorial function can only be applied to non-negative integers", _TokenRange);
 
 	return Factorial(value);
 }
