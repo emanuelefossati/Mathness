@@ -10,27 +10,22 @@ void Parser::Parse(std::vector<LexingToken>& lexingTokens)
 {
 	Init();
 
-	auto error = CheckBrackets(lexingTokens);
+	auto error = SplitTokenList(lexingTokens);
 
 	if (error.has_value())
 	{
-		std::cout << error.value() << std::endl;
+		fmt::print(fmt::fg(fmt::color::red), "{}\n", error.value());
 		return;
-	}
-
-	for (auto& token : _Tokens)
-	{
-		std::cout << token.ToString() << std::endl;
 	}
 }
 
 void Parser::Init()
 {
-	_Tokens.clear();
-	_LValue = std::nullopt;
+	_RValueTokenList = std::vector<LexingToken>();
+	_LValueTokenList = std::vector<LexingToken>();
 }
 
-std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingTokens)
+std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingTokens) const
 {
 	int currentRoundDepth = 0;
 	int currentSquareDepth = 0;
@@ -66,10 +61,6 @@ std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingToken
 		else if (currentCurlyDepth < 0)
 			return Error("Invalid curly bracket setting");
 
-		
-		if (token.Type != TokenType::OPEN_ROUND_BRACKET && token.Type != TokenType::CLOSE_ROUND_BRACKET)
-			_Tokens.emplace_back(token, currentRoundDepth);
-
 	}
 
 	if (currentRoundDepth != 0)
@@ -84,39 +75,35 @@ std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingToken
 	return std::nullopt;
 }
 
-std::optional<Error> Parser::CheckAssignment()
+std::optional<Error> Parser::SplitTokenList(std::vector<LexingToken>& lexingTokens)
 {
-	int assignmentIndex = -1;
-	int assignmentCount = 0;
+	size_t equalsCount = 0;
 
-	for (int i = 0; i < _Tokens.size(); i++)
+	for (size_t tokenIndex = 0; tokenIndex < lexingTokens.size(); tokenIndex++)
 	{
-		if (_Tokens[i].Type == TokenType::EQUALS)
+		auto& token = lexingTokens[tokenIndex];
+		if (token.Type == TokenType::EQUALS)
 		{
-			assignmentIndex = i;
-			assignmentCount++;
+			equalsCount++;
+			continue;
 		}
+
+		if (equalsCount == 0)
+			_LValueTokenList.push_back(token);
+		else if (equalsCount == 1)
+			_LValueTokenList.push_back(token);
+		else
+			return Error("Multiple equals signs found", Range(tokenIndex-1, 1));
 	}
 
-	if (assignmentCount > 1)
-		return Error("Multiple assignments found");
-
-	if (assignmentCount == 0)
-		return std::nullopt;
-
-	// One assignment found
-
-	if (assignmentIndex != 1)
-		return Error("Invalid assignment position");
-
-	if (_Tokens[0].Type != TokenType::STORAGE)
-		return Error("Expected an identifier before assignment");
-
-	_LValue = _Tokens[0].Value;
-
-	//Remove the first two tokens
-	_Tokens.erase(_Tokens.begin(), _Tokens.begin() + 2);
+	if (equalsCount == 0)
+		return Error("No equals sign found");
 
 	return std::nullopt;
+}
+
+std::shared_ptr<INode> Parser::BuildTree(size_t currentTokenIndex)
+{
+	return nullptr;
 }
 

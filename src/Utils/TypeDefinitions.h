@@ -8,6 +8,9 @@ using error_t = std::string;
 
 struct Range
 {
+	Range(size_t start, size_t length) : Start(start), Length(length) {}
+	Range() = default;
+
 	size_t Start = -1;
 	size_t Length = 0;
 };

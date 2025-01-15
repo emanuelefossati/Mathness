@@ -1,19 +1,14 @@
 #pragma once
 
-#include <iostream>
+#include <fmt/core.h>
+#include <fmt/color.h>
 #include <string>
 #include <tuple>
 #include <vector>
+#include "./AST/Node.h"
 
 #include "../Utils/TokenDefinitions.h"
 #include "../Utils/TypeDefinitions.h"
-
-struct ParsingToken : LexingToken 
-{
-	int Depth = 0;
-
-	ParsingToken(LexingToken token, int depth) : LexingToken(token), Depth(depth) {}
-};
 
 class Parser
 {
@@ -22,16 +17,16 @@ public:
 	static Parser& GetInstance();
 
 private:
-	std::vector<ParsingToken> _Tokens;
-	std::optional<std::string> _LValue;
+	std::vector<LexingToken> _RValueTokenList;
+	std::vector<LexingToken> _LValueTokenList;
 	
 	Parser() = default;
 
 	void Init();
 
-	std::optional<Error> CheckAssignment();
-	std::optional<Error> CheckBrackets(std::vector<LexingToken>& lexingTokens);
+	std::optional<Error> SplitTokenList(std::vector<LexingToken>& lexingTokens);
+	std::optional<Error> CheckBrackets(std::vector<LexingToken>& lexingTokens) const;
 	
-	void BuildTree();
+	std::shared_ptr<INode> BuildTree(size_t currentTokenIndex);
 
 };
