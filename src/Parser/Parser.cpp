@@ -31,8 +31,10 @@ std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingToken
 	int currentSquareDepth = 0;
 	int currentCurlyDepth = 0;
 
-	for (auto& token : lexingTokens)
+	for (size_t tokenIndex = 0; tokenIndex < lexingTokens.size(); tokenIndex++)
 	{
+		auto& token = lexingTokens[tokenIndex];
+
 		if (token.Type == TokenType::OPEN_ROUND_BRACKET)
 			currentRoundDepth++;
 
@@ -53,13 +55,28 @@ std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingToken
 
 
 		if (currentRoundDepth < 0)
-			return Error("Invalid round bracket setting");
+			return Error("Invalid round bracket setting", Range(tokenIndex, 1));
 		
 		else if (currentSquareDepth < 0)
-			return Error("Invalid square bracket setting");
+			return Error("Invalid square bracket setting", Range(tokenIndex, 1));
 
 		else if (currentCurlyDepth < 0)
-			return Error("Invalid curly bracket setting");
+			return Error("Invalid curly bracket setting", Range(tokenIndex, 1));
+
+		// Check for empty brackets
+		if (tokenIndex < lexingTokens.size() - 1)
+		{
+			auto& nextToken = lexingTokens[tokenIndex + 1];
+
+			if (token.Type == TokenType::OPEN_ROUND_BRACKET && nextToken.Type == TokenType::CLOSE_ROUND_BRACKET)
+				return Error("Empty round brackets", Range(tokenIndex, 2));
+
+			else if (token.Type == TokenType::OPEN_SQUARE_BRACKET && nextToken.Type == TokenType::CLOSE_SQUARE_BRACKET)
+				return Error("Empty square brackets", Range(tokenIndex, 2));
+
+			else if (token.Type == TokenType::OPEN_CURLY_BRACKET && nextToken.Type == TokenType::CLOSE_CURLY_BRACKET)
+				return Error("Empty curly brackets", Range(tokenIndex, 2));
+		}
 
 	}
 
@@ -73,6 +90,8 @@ std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingToken
 		return Error("Invalid curly bracket setting");
 
 	return std::nullopt;
+
+
 }
 
 std::optional<Error> Parser::SplitTokenList(std::vector<LexingToken>& lexingTokens)
@@ -102,8 +121,73 @@ std::optional<Error> Parser::SplitTokenList(std::vector<LexingToken>& lexingToke
 	return std::nullopt;
 }
 
-std::shared_ptr<INode> Parser::BuildTree(size_t currentTokenIndex)
+NodeResult Parser::BuildTree(size_t currentTokenIndex)
 {
-	return nullptr;
+	std::shared_ptr<INode> root = nullptr;
+	std::shared_ptr<INode> current = root;
+
+	while (true)
+	{
+		auto& currentToken = _RValueTokenList[currentTokenIndex];
+		
+		//first token in an expression can't be an operator (except for the unary minus or plus) nor comma, semicolon, or colon
+
+		if (currentToken.Type != TokenType::MINUS && IsTokenArithmeticOperator(currentToken.Type) ||
+			currentToken.Type == TokenType::COMMA ||
+			currentToken.Type == TokenType::COLON ||
+			currentToken.Type == TokenType::SEMICOLON)
+		{
+			return Error("Invalid expression start", Range(currentTokenIndex, 1));
+		}
+
+		if (currentToken.Type == TokenType::MINUS)
+		{
+			//create a product node with a value node of -1 and the next node
+
+			continue;
+		}
+
+		if (currentToken.Type == TokenType::NUMBER)
+		{
+
+		}
+		else if (currentToken.Type == TokenType::PI || currentToken.Type == TokenType::E)
+		{
+
+		}
+
+		else if(IsTokenElementaryFunction(currentToken.Type))
+		{
+
+		}
+		else if (currentToken.Type == TokenType::STORAGE)
+		{
+
+		}
+		else if (currentToken.Type == TokenType::OPEN_ROUND_BRACKET)
+		{
+		}
+		else if (currentToken.Type == TokenType::OPEN_SQUARE_BRACKET)
+		{
+		}
+		else if (currentToken.Type == TokenType::OPEN_CURLY_BRACKET)
+		{
+		}
+		else
+		{
+			return Error("Invalid token", Range(currentTokenIndex, 1));
+		}
+
+		currentTokenIndex++;
+
+		//now we have to check if the next token is an operator or the end of the expression
+
+
+
+
+
+	}
+
+	return root;
 }
 

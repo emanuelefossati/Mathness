@@ -10,5 +10,4 @@
 #include "./Ln/LnNode.h"
 #include "./Sin/SinNode.h"
 #include "./Sqrt/SqrtNode.h"
-#include "./Square/SquareNode.h"
 #include "./Tan/TanNode.h"
