@@ -1,6 +1,6 @@
 #include "DivisionNode.h"
 
-Result DivisionNode::GetResult() const
+EvaluationResult DivisionNode::GetResult() const
 {
 	auto leftResult = _Left->GetResult();
 	auto rightResult = _Right->GetResult();
@@ -54,7 +54,7 @@ Result DivisionNode::GetResult() const
 	
 }
 
-Result DivisionNode::GetMatrixDivision(const Matrix& left, const Matrix& right) const
+EvaluationResult DivisionNode::GetMatrixDivision(const Matrix& left, const Matrix& right) const
 {
 	if (!left.IsSquare())
 		return Error("Cannot perform division because dividend matrix is singular", _TokenRange);

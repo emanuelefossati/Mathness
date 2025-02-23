@@ -1,8 +1,8 @@
 #include "LnNode.h"
 
-Result LnNode::GetResult() const
+EvaluationResult LnNode::GetResult() const
 {
-	Result childResult = _Child->GetResult();
+	EvaluationResult childResult = _Child->GetResult();
 
 	if (childResult.IsError())
 		return childResult;

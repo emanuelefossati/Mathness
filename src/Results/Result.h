@@ -6,7 +6,7 @@
 #include <variant>
 #include <tuple>
 
-struct Result : public std::variant<scalar_t, Matrix, List, Error>
+struct EvaluationResult : public std::variant<scalar_t, Matrix, List, Error>
 {
 	using std::variant<scalar_t, Matrix, List, Error>::variant;
 
@@ -38,7 +38,7 @@ struct Result : public std::variant<scalar_t, Matrix, List, Error>
 
 		return value == std::floor(value);
 	}
-	static bool IsScalarInteger(const Result& result)
+	static bool IsScalarInteger(const EvaluationResult& result)
 	{
 		assert(result.IsScalar());
 
@@ -66,7 +66,7 @@ struct Result : public std::variant<scalar_t, Matrix, List, Error>
 	}
 
 
-	static constexpr std::tuple<scalar_t, Matrix> RetrieveScalarAndMatrix(const Result& leftResult, const Result& rightResult)
+	static constexpr std::tuple<scalar_t, Matrix> RetrieveScalarAndMatrix(const EvaluationResult& leftResult, const EvaluationResult& rightResult)
 	{
 		assert(leftResult.IsScalar() != rightResult.IsScalar());
 		assert(leftResult.IsMatrix() != rightResult.IsMatrix());

@@ -1,9 +1,9 @@
 #include "PowerNode.h"
 
-Result PowerNode::GetResult() const
+EvaluationResult PowerNode::GetResult() const
 {
-	Result leftResult = _Left->GetResult();
-	Result rightResult = _Right->GetResult();
+	EvaluationResult leftResult = _Left->GetResult();
+	EvaluationResult rightResult = _Right->GetResult();
 
 	if (leftResult.IsError())
 		return leftResult;
@@ -29,7 +29,7 @@ Result PowerNode::GetResult() const
 	if(!base.IsSquare())
 		return Error("Matrix must be square to perform power", _TokenRange);
 
-	if (!Result::IsScalarInteger(exponent))
+	if (!EvaluationResult::IsScalarInteger(exponent))
 		return Error("Exponent must be a non-negative integer", _TokenRange);
 
 	if (exponent == 0)

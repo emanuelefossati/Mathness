@@ -7,5 +7,5 @@ class SqrtNode : public IUnaryNode
 public:
 	SqrtNode() = default;
 
-	Result GetResult() const override;
+	EvaluationResult GetResult() const override;
 };

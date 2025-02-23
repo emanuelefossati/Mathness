@@ -1,8 +1,8 @@
 #include "SqrtNode.h"
 
-Result SqrtNode::GetResult() const
+EvaluationResult SqrtNode::GetResult() const
 {
-	Result result = _Child->GetResult();
+	EvaluationResult result = _Child->GetResult();
 
 	if (result.IsError())
 		return result;

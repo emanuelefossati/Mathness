@@ -6,5 +6,5 @@ class ArctanNode : public IUnaryNode
 {
 public:
 	ArctanNode() = default;
-	Result GetResult() const override;
+	EvaluationResult GetResult() const override;
 };

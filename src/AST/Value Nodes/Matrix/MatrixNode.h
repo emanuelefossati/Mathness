@@ -19,7 +19,7 @@ public:
 	size_t GetColumns() const { return _Columns; }
 	void SetColumns(size_t columns) { _Columns = columns; }
 
-	Result GetResult() const override;
+	EvaluationResult GetResult() const override;
 
 private:
 	std::vector<std::shared_ptr<INode>> _Elements;

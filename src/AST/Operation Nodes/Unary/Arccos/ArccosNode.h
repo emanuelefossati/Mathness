@@ -6,5 +6,5 @@ class ArccosNode : public IUnaryNode
 {
 public:
 	ArccosNode() = default;
-	Result GetResult() const override;
+	EvaluationResult GetResult() const override;
 };

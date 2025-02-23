@@ -1,6 +1,6 @@
 #include "DotNode.h"
 
-Result DotNode::GetResult() const
+EvaluationResult DotNode::GetResult() const
 {
 	auto left = _Left->GetResult();
 	auto right = _Right->GetResult();

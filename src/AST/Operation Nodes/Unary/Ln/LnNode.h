@@ -7,5 +7,5 @@ class LnNode : public IUnaryNode
 public:
 	LnNode() = default;
 
-	Result GetResult() const override;
+	EvaluationResult GetResult() const override;
 };

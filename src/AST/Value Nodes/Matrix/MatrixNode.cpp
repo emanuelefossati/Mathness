@@ -6,7 +6,7 @@ MatrixNode::MatrixNode()
 	_Columns = 0;
 }
 
-Result MatrixNode::GetResult() const
+EvaluationResult MatrixNode::GetResult() const
 {
 	Matrix matrix;
 	matrix.Rows = _Rows;

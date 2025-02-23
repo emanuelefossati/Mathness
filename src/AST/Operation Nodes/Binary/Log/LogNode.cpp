@@ -1,6 +1,6 @@
 #include "LogNode.h"
 
-Result LogNode::GetResult() const
+EvaluationResult LogNode::GetResult() const
 {
 	auto left = _Left->GetResult();
 	auto right = _Right->GetResult();

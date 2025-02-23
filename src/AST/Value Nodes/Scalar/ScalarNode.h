@@ -7,7 +7,7 @@ class ScalarNode : public INode
 public:
 	ScalarNode(double value) : _Value(value) {}
 
-	Result GetResult() const override { return scalar_t{ _Value }; }
+	EvaluationResult GetResult() const override { return scalar_t{ _Value }; }
 private:
 	scalar_t _Value;
 

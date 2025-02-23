@@ -8,3 +8,4 @@
 #include "Power/PowerNode.h"
 #include "Product/ProductNode.h"
 #include "Sum/SumNode.h"
+#include "Subtraction/SubtractionNode.h"

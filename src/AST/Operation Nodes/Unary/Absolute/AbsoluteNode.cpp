@@ -1,6 +1,6 @@
 #include "AbsoluteNode.h"
 
-Result AbsoluteNode::GetResult() const
+EvaluationResult AbsoluteNode::GetResult() const
 {
 	auto childResult = _Child->GetResult();
 

@@ -1,6 +1,6 @@
 #include  "ModulusNode.h"
 
-Result ModulusNode::GetResult() const
+EvaluationResult ModulusNode::GetResult() const
 {
 	auto left = _Left->GetResult();
 	auto right = _Right->GetResult();

@@ -8,5 +8,5 @@ public:
 
 	ModulusNode() = default;
 
-	Result GetResult() const override;
+	EvaluationResult GetResult() const override;
 };

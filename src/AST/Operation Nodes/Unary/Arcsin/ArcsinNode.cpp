@@ -1,8 +1,8 @@
 #include "ArcsinNode.h"
 
-Result ArcsinNode::GetResult() const
+EvaluationResult ArcsinNode::GetResult() const
 {
-	Result childResult = _Child->GetResult();
+	EvaluationResult childResult = _Child->GetResult();
 
 	if (childResult.IsError())
 		return childResult;

@@ -12,7 +12,7 @@
 class INode
 {
 public:
-	virtual Result GetResult() const = 0;
+	virtual EvaluationResult GetResult() const = 0;
 	std::shared_ptr<INode> GetParent() const { return _Parent; }
 	void SetParent(std::shared_ptr<INode> parent) { _Parent = parent; }
 

@@ -1,8 +1,8 @@
 #include "TanNode.h"
 
-Result TanNode::GetResult() const
+EvaluationResult TanNode::GetResult() const
 {
-	Result childResult = _Child->GetResult();
+	EvaluationResult childResult = _Child->GetResult();
 
 	if (childResult.IsError())
 		return childResult;

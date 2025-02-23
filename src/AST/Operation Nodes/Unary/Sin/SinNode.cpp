@@ -1,8 +1,8 @@
 #include "SinNode.h"
 
-Result SinNode::GetResult() const
+EvaluationResult SinNode::GetResult() const
 {
-	Result childResult = _Child->GetResult();
+	EvaluationResult childResult = _Child->GetResult();
 
 	if (childResult.IsError())
 		return childResult;

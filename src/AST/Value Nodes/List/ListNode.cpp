@@ -1,6 +1,6 @@
 #include "ListNode.h"
 
-Result ListNode::GetResult() const
+EvaluationResult ListNode::GetResult() const
 {
 	List list;
 

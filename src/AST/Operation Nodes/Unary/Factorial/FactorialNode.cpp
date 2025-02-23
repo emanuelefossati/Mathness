@@ -1,8 +1,8 @@
 #include "FactorialNode.h"
 
-Result FactorialNode::GetResult() const
+EvaluationResult FactorialNode::GetResult() const
 {
-	Result childResult = _Child->GetResult();
+	EvaluationResult childResult = _Child->GetResult();
 
 	if (childResult.IsError())
 		return childResult;
@@ -12,7 +12,7 @@ Result FactorialNode::GetResult() const
 
 	scalar_t value = childResult.ToScalar();
 
-	if (value < 0 || Result::IsScalarInteger(value))
+	if (value < 0 || EvaluationResult::IsScalarInteger(value))
 		return Error("Factorial function can only be applied to non-negative integers", _TokenRange);
 
 	return Factorial(value);

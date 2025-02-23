@@ -8,7 +8,7 @@ public:
 	ProductNode() = default;
 	
 
-	Result GetResult() const override;
+	EvaluationResult GetResult() const override;
 
 private:
 	static bool CanMatricesBeMultiplied(const Matrix& left, const Matrix& right);

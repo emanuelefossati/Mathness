@@ -7,5 +7,5 @@ class ExpNode : public IUnaryNode
 public:
 	ExpNode() = default;
 
-	Result GetResult() const override;
+	EvaluationResult GetResult() const override;
 };

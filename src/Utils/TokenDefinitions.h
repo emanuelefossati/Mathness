@@ -9,6 +9,9 @@
 #include <string_view>
 #include <unordered_map>
 #include <format>
+#include <numbers>
+
+#include "./Utils//TypeDefinitions.h"
 
 
 
@@ -126,27 +129,59 @@ static const std::unordered_map<std::string, TokenType>& GetIdentifierMap()
 	return identifier_map;
 }
 
-static bool IsTokenElementaryFunction(TokenType token)
+
+
+static bool IsTokenUnaryFunctionName(TokenType token)
 {
-	return 
-		
+	return
+		token == TokenType::SQRT ||
+		token == TokenType::ABS ||
+		token == TokenType::NEGATE ||
+		token == TokenType::EXP ||
+		token == TokenType::LN ||
+		token == TokenType::FACTORIAL ||
+		token == TokenType::SIN ||
+		token == TokenType::COS ||
+		token == TokenType::TAN ||
+		token == TokenType::ASIN ||
+		token == TokenType::ACOS ||
+		token == TokenType::ATAN;
+}
+
+static bool IsTokenBinaryFunctionName(TokenType token)
+{
+	return
 		token == TokenType::SCALAR_PRODUCT ||
 		token == TokenType::VECTOR_PRODUCT ||
-		token == TokenType::LOG || 
+		token == TokenType::LOG;
+}
 
-		token == TokenType::SQRT || 
-		token == TokenType::ABS || 
-		token == TokenType::NEGATE || 
-		token == TokenType::EXP ||
-		token == TokenType::LN || 
-		token == TokenType::FACTORIAL || 
+static bool IsTokenElementaryFunctionName(TokenType token)
+{
+	return
+		IsTokenBinaryFunctionName(token) ||
+		IsTokenUnaryFunctionName(token);
+}
 
-		token == TokenType::SIN || 
-		token == TokenType::COS || 
-		token == TokenType::TAN || 
-		token == TokenType::ASIN || 
-		token == TokenType::ACOS || 
-		token == TokenType::ATAN;
+static bool IsTokenConstant(TokenType token)
+{
+	return
+		token == TokenType::PI ||
+		token == TokenType::E;
+}
+
+static bool IsTokenScalarValue(TokenType token)
+{
+	return
+		token == TokenType::NUMBER ||
+		IsTokenConstant(token);
+}
+
+static bool IsTokenValue(TokenType token)
+{
+	return
+		IsTokenScalarValue(token) ||
+		token == TokenType::STORAGE;
 }
 
 static bool IsTokenArithmeticOperator(TokenType token)
@@ -162,6 +197,29 @@ static bool IsTokenArithmeticOperator(TokenType token)
 
 
 
+static bool IsTokenOpenBracket(TokenType token)
+{
+	return
+		token == TokenType::OPEN_ROUND_BRACKET ||
+		token == TokenType::OPEN_SQUARE_BRACKET ||
+		token == TokenType::OPEN_CURLY_BRACKET;
+}
+
+static bool IsTokenMinus(TokenType token)
+{
+	return token == TokenType::MINUS;
+}
+
+static bool IsTokenExpressionEnd(TokenType token)
+{
+	return 
+		token == TokenType::SEMICOLON ||
+		token == TokenType::COMMA ||
+		token == TokenType::CLOSE_ROUND_BRACKET ||
+		token == TokenType::CLOSE_SQUARE_BRACKET ||
+		token == TokenType::CLOSE_CURLY_BRACKET;
+}
+
 struct LexingToken
 {
 	TokenType Type;
@@ -169,7 +227,7 @@ struct LexingToken
 
 	std::string ToString() const
 	{
-		
+
 		std::string s_type;
 		switch (Type)
 		{
@@ -335,4 +393,24 @@ struct LexingToken
 
 	}
 };
+
+static scalar_t GetScalarValue(LexingToken token)
+{
+	if (token.Type == TokenType::NUMBER)
+	{
+		return std::stof(token.Value);
+	}
+
+	switch (token.Type)
+	{
+	case TokenType::PI:
+		return std::numbers::pi;
+	case TokenType::E:
+		return std::numbers::e;
+	default:
+		return 0;
+	}
+}
+
+
 

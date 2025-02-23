@@ -6,5 +6,5 @@ class ArcsinNode : public IUnaryNode
 {
 public:
 	ArcsinNode() = default;
-	Result GetResult() const override;
+	EvaluationResult GetResult() const override;
 };

@@ -1,8 +1,8 @@
 #include "ExpNode.h"
 
-Result ExpNode::GetResult() const
+EvaluationResult ExpNode::GetResult() const
 {
-	Result childResult = _Child->GetResult();
+	EvaluationResult childResult = _Child->GetResult();
 
 	if (childResult.IsError())
 		return childResult;

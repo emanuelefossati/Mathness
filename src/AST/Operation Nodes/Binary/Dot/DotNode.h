@@ -7,6 +7,6 @@ class DotNode : public IBinaryNode
 public:
 	DotNode() = default;
 
-	Result GetResult() const override;
+	EvaluationResult GetResult() const override;
 };
 

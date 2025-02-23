@@ -1,9 +1,9 @@
 #include "ProductNode.h"
 
-Result ProductNode::GetResult() const
+EvaluationResult ProductNode::GetResult() const
 {
-	Result leftResult = _Left->GetResult();
-	Result rightResult = _Right->GetResult();
+	EvaluationResult leftResult = _Left->GetResult();
+	EvaluationResult rightResult = _Right->GetResult();
 
 	if (leftResult.IsError())
 		return leftResult;
@@ -41,7 +41,7 @@ Result ProductNode::GetResult() const
 	}
 
 	// Scalar * Matrix
-	auto [scalar, matrix] = Result::RetrieveScalarAndMatrix(leftResult, rightResult);
+	auto [scalar, matrix] = EvaluationResult::RetrieveScalarAndMatrix(leftResult, rightResult);
 
 	return matrix * scalar;
 }

@@ -1,8 +1,8 @@
 #include "ArccosNode.h"
 
-Result ArccosNode::GetResult() const
+EvaluationResult ArccosNode::GetResult() const
 {
-	Result childResult = _Child->GetResult();
+	EvaluationResult childResult = _Child->GetResult();
 
 	if (childResult.IsError())
 		return childResult;

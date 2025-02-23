@@ -4,7 +4,8 @@
 
 class LogNode : public IBinaryNode
 {
+public:
 	LogNode() = default;
 
-	Result GetResult() const override;
+	EvaluationResult GetResult() const override;
 };

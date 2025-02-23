@@ -7,5 +7,5 @@ class TanNode : public IUnaryNode
 public:
 	TanNode() = default;
 
-	Result GetResult() const override;
+	EvaluationResult GetResult() const override;
 };

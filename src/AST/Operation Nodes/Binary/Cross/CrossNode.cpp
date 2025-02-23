@@ -1,6 +1,6 @@
 #include "CrossNode.h"
 
-Result CrossNode::GetResult() const
+EvaluationResult CrossNode::GetResult() const
 {
 	auto leftResult = _Left->GetResult();
 	auto rightResult = _Right->GetResult();

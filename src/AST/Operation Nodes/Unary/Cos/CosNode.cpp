@@ -1,8 +1,8 @@
 #include "CosNode.h"
 
-Result CosNode::GetResult() const
+EvaluationResult CosNode::GetResult() const
 {
-	Result childResult = _Child->GetResult();
+	EvaluationResult childResult = _Child->GetResult();
 
 	if (childResult.IsError())
 		return childResult;
