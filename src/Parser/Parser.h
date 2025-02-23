@@ -62,7 +62,7 @@ private:
 	std::vector<LexingToken>::iterator _CurrentTokenIt;
 
 	//wanna create a list of functions that check the token type
-	std::vector<std::function<bool(TokenType)>> _TokenTypeCheckList;
+	std::vector<std::function<bool(TokenType)>> _ExpectedTokenTypes;
 
 	std::optional<Error> CheckTokenType(TokenType tokenType) const;
 
@@ -76,9 +76,10 @@ private:
 
 
 	
-	NodeResult EvaluateExpression();
-	NodeResult EvaluateMatrix();
-	NodeResult EvaluateList();
+	NodeResult ParseExpression();
+	NodeResult ParseMatrix();
+	NodeResult ParseList();
+	NodeResult ParseMathOperation();
 
 
 	size_t CurrentTokenIndex() const;

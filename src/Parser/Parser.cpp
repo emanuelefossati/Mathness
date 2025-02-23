@@ -137,259 +137,110 @@ size_t Parser::CurrentTokenIndex() const
 	return std::distance(_CurrentValueTokenList->begin(), _CurrentTokenIt);
 }
 
-NodeResult Parser::EvaluateExpression()
+NodeResult Parser::ParseExpression()
 {
-	std::shared_ptr<INode> rootNode = nullptr;
-	std::shared_ptr<INode> currentNode = nullptr;
+	std::shared_ptr<INode> fatherNode = nullptr;
+	std::shared_ptr<INode> leftChildNode = nullptr;
+	std::shared_ptr<INode> rightChildNode = nullptr;
 
-	//first token in an expression must be either a number, a variable, a function, a minus, or an open bracket
-
-	_TokenTypeCheckList = { IsTokenValue, IsTokenOpenBracket, IsTokenMinus, IsTokenElementaryFunctionName };
-
-	auto error = CheckTokenType(_CurrentTokenIt->Type);
-	if (error.has_value())
-		return error.value();
-
-	if (IsTokenScalarValue(_CurrentTokenIt->Type))
+	if (_CurrentTokenIt->Type == TokenType::OPEN_ROUND_BRACKET)
 	{
-		rootNode = std::make_shared<ScalarNode>(GetScalarValue(*_CurrentTokenIt));
+		_CurrentTokenIt++;
+		auto expressionResult = ParseExpression();
 
-		_TokenTypeCheckList = { IsTokenArithmeticOperator, IsTokenExpressionEnd };
+		if (expressionResult.IsError())
+			return expressionResult;
+
+		assert(_CurrentTokenIt->Type == TokenType::CLOSE_ROUND_BRACKET);
+		
+		leftChildNode = expressionResult.ToNode();
+
 	}
+	else if (_CurrentTokenIt->Type == TokenType::OPEN_SQUARE_BRACKET)
+	{
+		_CurrentTokenIt++;
+		auto expressionResult = ParseMatrix();
 
+		if (expressionResult.IsError())
+			return expressionResult;
+
+		assert(_CurrentTokenIt->Type == TokenType::CLOSE_SQUARE_BRACKET);
+
+		leftChildNode = expressionResult.ToNode();
+	}
+	else if (_CurrentTokenIt->Type == TokenType::OPEN_CURLY_BRACKET)
+	{
+		_CurrentTokenIt++;
+		auto expressionResult = ParseList();
+
+		if (expressionResult.IsError())
+			return expressionResult;
+
+		assert(_CurrentTokenIt->Type == TokenType::CLOSE_CURLY_BRACKET);
+
+		leftChildNode = expressionResult.ToNode();
+	}
+	else if (IsTokenValue(_CurrentTokenIt->Type))
+	{
+		leftChildNode = std::make_shared<ScalarNode>(GetScalarValue(*_CurrentTokenIt));
+		_CurrentTokenIt++;
+	}
 	else if (IsTokenMinus(_CurrentTokenIt->Type))
 	{
-		auto node = std::make_shared<ProductNode>();
-		node->SetLeft(std::make_shared<ScalarNode>(-1.0));
-		rootNode = node;
-
-
-		_TokenTypeCheckList = { IsTokenValue, IsTokenOpenBracket, IsTokenElementaryFunctionName };
-	}
-
-	else if (IsTokenOpenBracket(_CurrentTokenIt->Type))
-	{
-		NodeResult result;
 		_CurrentTokenIt++;
 
 		if (_CurrentTokenIt->Type == TokenType::OPEN_ROUND_BRACKET)
 		{
-			result = EvaluateExpression();
+
 		}
 		else if (_CurrentTokenIt->Type == TokenType::OPEN_SQUARE_BRACKET)
 		{
-			result = EvaluateMatrix();
+
 		}
-		else if (_CurrentTokenIt->Type == TokenType::OPEN_CURLY_BRACKET)
+		else if (IsTokenValue(_CurrentTokenIt->Type))
 		{
-			result = EvaluateList();
+
 		}
-
-		if (result.IsError())
-			return result;
-
-		rootNode = result.ToNode();
+		else if (IsTokenUnaryFunctionName(_CurrentTokenIt->Type))
+		{
+			//parse unary function
+		}
+		else if (IsTokenBinaryFunctionName(_CurrentTokenIt->Type))
+		{
+			//parse binary function
+		}
+		else if (_CurrentTokenIt->Type == TokenType::STORAGE)
+		{
+			//try to access the storage
+		}
+		else
+		{
+			return Error("Invalid token", Range(CurrentTokenIndex(), 1));
+		}
 	}
-
 	else if (IsTokenUnaryFunctionName(_CurrentTokenIt->Type))
 	{
-		std::shared_ptr<IUnaryNode> unaryFunctionNode;
-
-		switch (_CurrentTokenIt->Type)
-		{
-		case TokenType::ABS:
-			unaryFunctionNode = std::make_shared<AbsoluteNode>();
-			break;
-
-		case TokenType::SQRT:
-			unaryFunctionNode = std::make_shared<SqrtNode>();
-			break;
-
-		case TokenType::SIN:
-			unaryFunctionNode = std::make_shared<SinNode>();
-			break;
-
-		case TokenType::COS:
-			unaryFunctionNode = std::make_shared<CosNode>();
-			break;
-
-		case TokenType::TAN:
-			unaryFunctionNode = std::make_shared<TanNode>();
-			break;
-
-		case TokenType::ASIN:
-			unaryFunctionNode = std::make_shared<ArcsinNode>();
-			break;
-
-		case TokenType::ACOS:
-			unaryFunctionNode = std::make_shared<ArccosNode>();
-			break;
-
-		case TokenType::ATAN:
-			unaryFunctionNode = std::make_shared<ArctanNode>();
-			break;
-
-		case TokenType::LN:
-			unaryFunctionNode = std::make_shared<LnNode>();
-			break;
-
-		case TokenType::EXP:
-			unaryFunctionNode = std::make_shared<ExpNode>();
-			break;
-
-		default:
-			assert(false && "Invalid unary function type");
-		}
-
-		_CurrentTokenIt++;
-
-		if (_CurrentTokenIt->Type != TokenType::OPEN_ROUND_BRACKET)
-			return Error("Expected open round bracket after unary function", Range(CurrentTokenIndex(), 1));
-
-		NodeResult result = EvaluateExpression();
-
-		if (result.IsError())
-			return result;
-
-		if (_CurrentTokenIt->Type != TokenType::CLOSE_ROUND_BRACKET)
-			return Error("Expected close round bracket after unary function argument", Range(CurrentTokenIndex(), 1));
-
-		unaryFunctionNode->SetChild(result.ToNode());
-
-		rootNode = unaryFunctionNode;
-
-		_TokenTypeCheckList = { IsTokenArithmeticOperator, IsTokenExpressionEnd };
+		//parse unary function
 	}
-
 	else if (IsTokenBinaryFunctionName(_CurrentTokenIt->Type))
 	{
-		std::shared_ptr<IBinaryNode> binaryFunctionNode;
-
-		switch (_CurrentTokenIt->Type)
-		{
-		case TokenType::SCALAR_PRODUCT:
-			binaryFunctionNode = std::make_shared<DotNode>();
-			break;
-
-		case TokenType::VECTOR_PRODUCT:
-			binaryFunctionNode = std::make_shared<CrossNode>();
-			break;
-
-		case TokenType::LOG:
-			binaryFunctionNode = std::make_shared<LogNode>();
-			break;
-
-		default:
-			assert(false && "Invalid binary function type");
-		}
-
-		_CurrentTokenIt++;
-
-		if (_CurrentTokenIt->Type != TokenType::OPEN_ROUND_BRACKET)
-			return Error("Expected open round bracket after binary function", Range(CurrentTokenIndex(), 1));
-
-		NodeResult leftResult = EvaluateExpression();
-
-		if (leftResult.IsError())
-			return leftResult;
-
-		if (_CurrentTokenIt->Type != TokenType::COMMA)
-			return Error("Expected comma  after binary function", Range(CurrentTokenIndex(), 1));
-
-		_CurrentTokenIt++;
-
-		NodeResult rightResult = EvaluateExpression();
-
-		if (rightResult.IsError())
-			return rightResult;
-
-		if (_CurrentTokenIt->Type != TokenType::CLOSE_ROUND_BRACKET)
-			return Error("Expected close round bracket after binary function arguments", Range(CurrentTokenIndex(), 1));
-
-		binaryFunctionNode->SetLeft(leftResult.ToNode());
-		binaryFunctionNode->SetRight(rightResult.ToNode());
-
-		rootNode = binaryFunctionNode;
-
-		_TokenTypeCheckList = { IsTokenArithmeticOperator, IsTokenExpressionEnd };
+		//parse binary function
 	}
-
-	currentNode = rootNode;
-	
-	_CurrentTokenIt++;
-
-
-	while (true)
+	else if (_CurrentTokenIt->Type == TokenType::STORAGE)
 	{
-		auto error = CheckTokenType(_CurrentTokenIt->Type);
-
-		if (error.has_value())
-			return error.value();
-
-		if (IsTokenExpressionEnd(_CurrentTokenIt->Type))
-		{
-			return rootNode;
-		}
-
-		else if (IsTokenMinus)
-		{
-
-		}
-
-		else if (IsTokenArithmeticOperator)
-		{
-			std::shared_ptr<IBinaryNode> binaryNode;
-
-			switch (_CurrentTokenIt->Type)
-			{
-			case TokenType::PLUS:
-				binaryNode = std::make_shared<SumNode>();
-				break;
-
-			case TokenType::MINUS:
-				binaryNode = std::make_shared<SubtractionNode>();
-				break;
-
-			case TokenType::PRODUCT:
-				binaryNode = std::make_shared<ProductNode>();
-				break;
-
-			case TokenType::DIVIDE:
-				binaryNode = std::make_shared<DivisionNode>();
-				break;
-
-			case TokenType::POWER:
-				binaryNode = std::make_shared<PowerNode>();
-				break;
-
-			default:
-				assert(false && "Invalid binary operator type");
-			}
-
-			_CurrentTokenIt++;
-
-			NodeResult rightResult = EvaluateExpression();
-
-			if (rightResult.IsError())
-				return rightResult;
-
-			binaryNode->SetLeft(currentNode);
-			binaryNode->SetRight(rightResult.ToNode());
-
-			currentNode = binaryNode;
-		}
-
-
-
-
-
-		_CurrentTokenIt++;
+		//try to access the storage
+	}
+	else
+	{
+		return Error("Invalid token", Range(CurrentTokenIndex(), 1));
 	}
 
-	return rootNode;
+
+
+
 }
 
-NodeResult Parser::EvaluateMatrix()
+NodeResult Parser::ParseMatrix()
 {
 	assert(_CurrentTokenIt->Type == TokenType::OPEN_SQUARE_BRACKET);
 
@@ -406,7 +257,7 @@ NodeResult Parser::EvaluateMatrix()
 
 	while (true)
 	{
-		NodeResult currentElementExpressionResult = EvaluateExpression();
+		NodeResult currentElementExpressionResult = ParseExpression();
 
 		if (currentElementExpressionResult.IsError())
 			return currentElementExpressionResult;
@@ -492,7 +343,7 @@ NodeResult Parser::EvaluateMatrix()
 	}
 }
 
-NodeResult Parser::EvaluateList()
+NodeResult Parser::ParseList()
 {
 	return NodeResult();
 }
@@ -501,7 +352,7 @@ NodeResult Parser::EvaluateList()
 std::optional<Error> Parser::CheckTokenType(TokenType tokenType) const
 {
 	bool isTokenTypeValid = false;
-	for (auto& checkFunction : _TokenTypeCheckList)
+	for (auto& checkFunction : _ExpectedTokenTypes)
 	{
 		if (checkFunction(_CurrentTokenIt->Type))
 		{
