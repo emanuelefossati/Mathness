@@ -6,6 +6,7 @@
 #include <tuple>
 #include <vector>
 #include <functional>
+
 #include "./AST/Node.h"
 #include "./AST/Operation Nodes/Binary/BinaryOperations.h"
 #include "./AST/Operation Nodes/Unary/UnaryOperations.h"
@@ -13,39 +14,9 @@
 
 #include "../Utils/TokenDefinitions.h"
 #include "../Utils/TypeDefinitions.h"
+#include "./Utils/Utils.h"
 
-struct NodeResult : public std::variant<std::shared_ptr<INode>, Error>
-{
-	using std::variant<std::shared_ptr<INode>, Error>::variant;
 
-	constexpr bool IsNode() const
-	{
-		return std::holds_alternative<std::shared_ptr<INode>>(*this);
-	}
-
-	constexpr bool IsError() const
-	{
-		return std::holds_alternative<Error>(*this);
-	}
-
-	std::shared_ptr<INode> ToNode() const
-	{
-		assert(IsNode());
-		return std::get<std::shared_ptr<INode>>(*this);
-	}
-
-	constexpr Error ToError() const
-	{
-		assert(IsError());
-		return std::get<Error>(*this);
-	}
-};
-
-enum class ExpressionElementType
-{
-	ODD,
-	EVEN
-};
 
 class Parser
 {
@@ -75,11 +46,22 @@ private:
 	std::optional<Error> CheckBrackets(std::vector<LexingToken>& lexingTokens) const;
 
 
+
+
 	
 	NodeResult ParseExpression();
 	NodeResult ParseMatrix();
 	NodeResult ParseList();
 	NodeResult ParseMathOperation();
+
+	ParsingCheckResult CheckForOpenRoundBracket(std::shared_ptr<INode>& node);
+	ParsingCheckResult CheckForOpenSquareBracket(std::shared_ptr<INode>& node);
+	ParsingCheckResult CheckForOpenCurlyBracket(std::shared_ptr<INode>& node);
+	ParsingCheckResult CheckForValue(std::shared_ptr<INode>& node);
+	ParsingCheckResult CheckForMinus(std::shared_ptr<INode>& node);
+	ParsingCheckResult CheckForUnaryFunctionName(std::shared_ptr<INode>& node);
+	ParsingCheckResult CheckForBinaryFunctionName(std::shared_ptr<INode>& node);
+
 
 
 	size_t CurrentTokenIndex() const;

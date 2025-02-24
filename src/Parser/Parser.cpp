@@ -366,3 +366,112 @@ std::optional<Error> Parser::CheckTokenType(TokenType tokenType) const
 
 	return std::nullopt;
 }
+
+
+ParsingCheckResult Parser::CheckForOpenRoundBracket(std::shared_ptr<INode>& node)
+{
+	if (_CurrentTokenIt->Type == TokenType::OPEN_ROUND_BRACKET)
+	{
+		_CurrentTokenIt++;
+		auto expressionResult = ParseExpression();
+
+		if (expressionResult.IsError())
+			return expressionResult.ToError();
+
+		assert(_CurrentTokenIt->Type == TokenType::CLOSE_ROUND_BRACKET);
+
+		node = expressionResult.ToNode();
+
+		return true;
+	}
+
+	return false;
+}
+
+ParsingCheckResult Parser::CheckForOpenSquareBracket(std::shared_ptr<INode>& node)
+{
+	if (_CurrentTokenIt->Type == TokenType::OPEN_SQUARE_BRACKET)
+	{
+		_CurrentTokenIt++;
+		auto expressionResult = ParseMatrix();
+
+		if (expressionResult.IsError())
+			return expressionResult.ToError();
+
+		assert(_CurrentTokenIt->Type == TokenType::CLOSE_SQUARE_BRACKET);
+
+		node = expressionResult.ToNode();
+
+		return true;
+	}
+
+	return false;
+}
+
+ParsingCheckResult Parser::CheckForOpenCurlyBracket(std::shared_ptr<INode>& node)
+{
+	if (_CurrentTokenIt->Type == TokenType::OPEN_CURLY_BRACKET)
+	{
+		_CurrentTokenIt++;
+		auto expressionResult = ParseList();
+
+		if (expressionResult.IsError())
+			return expressionResult.ToError();
+
+		assert(_CurrentTokenIt->Type == TokenType::CLOSE_CURLY_BRACKET);
+
+		node = expressionResult.ToNode();
+
+		return true;
+	}
+
+	return false;
+}
+
+ParsingCheckResult Parser::CheckForValue(std::shared_ptr<INode>& node)
+{
+	if (IsTokenValue(_CurrentTokenIt->Type))
+	{
+		node = std::make_shared<ScalarNode>(GetScalarValue(*_CurrentTokenIt));
+		_CurrentTokenIt++;
+		return true;
+	}
+
+	return false;
+}
+
+ParsingCheckResult Parser::CheckForUnaryFunctionName(std::shared_ptr<INode>& node)
+{
+	if (IsTokenUnaryFunctionName(_CurrentTokenIt->Type))
+	{
+		//parse unary function
+
+		return true;
+	}
+
+	return false;
+}
+
+ParsingCheckResult Parser::CheckForBinaryFunctionName(std::shared_ptr<INode>& node)
+{
+	if (IsTokenBinaryFunctionName(_CurrentTokenIt->Type))
+	{
+		//parse binary function
+
+		return true;
+	}
+
+	return false;
+}
+
+ParsingCheckResult Parser::CheckForMinus(std::shared_ptr<INode>& node)
+{
+	if (IsTokenMinus(_CurrentTokenIt->Type))
+	{
+		
+
+		return true;
+	}
+
+	return false;
+}
