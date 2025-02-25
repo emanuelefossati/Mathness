@@ -18,7 +18,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
-add_executable(mathness ${SRC_FILES} "src/Parser/Utils/Utils.h")
+add_executable(mathness ${SRC_FILES})
 
 find_package(fmt CONFIG REQUIRED)
 target_link_libraries(mathness PRIVATE fmt::fmt)

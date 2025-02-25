@@ -378,7 +378,8 @@ ParsingCheckResult Parser::CheckForOpenRoundBracket(std::shared_ptr<INode>& node
 		if (expressionResult.IsError())
 			return expressionResult.ToError();
 
-		assert(_CurrentTokenIt->Type == TokenType::CLOSE_ROUND_BRACKET);
+		if((_CurrentTokenIt - 1)->Type != TokenType::CLOSE_ROUND_BRACKET)
+			return Error("Expected closing round bracket after inner expression", Range(CurrentTokenIndex() - 1, 1));
 
 		node = expressionResult.ToNode();
 
@@ -398,7 +399,8 @@ ParsingCheckResult Parser::CheckForOpenSquareBracket(std::shared_ptr<INode>& nod
 		if (expressionResult.IsError())
 			return expressionResult.ToError();
 
-		assert(_CurrentTokenIt->Type == TokenType::CLOSE_SQUARE_BRACKET);
+		if((_CurrentTokenIt - 1)->Type != TokenType::CLOSE_SQUARE_BRACKET)
+			return Error("Expected closing square bracket after matrix", Range(CurrentTokenIndex() - 1, 1));
 
 		node = expressionResult.ToNode();
 
@@ -418,7 +420,8 @@ ParsingCheckResult Parser::CheckForOpenCurlyBracket(std::shared_ptr<INode>& node
 		if (expressionResult.IsError())
 			return expressionResult.ToError();
 
-		assert(_CurrentTokenIt->Type == TokenType::CLOSE_CURLY_BRACKET);
+		if((_CurrentTokenIt - 1)->Type != TokenType::CLOSE_CURLY_BRACKET)
+			return Error("Expected closing curly bracket after list", Range(CurrentTokenIndex() - 1, 1));
 
 		node = expressionResult.ToNode();
 
@@ -444,7 +447,19 @@ ParsingCheckResult Parser::CheckForUnaryFunctionName(std::shared_ptr<INode>& nod
 {
 	if (IsTokenUnaryFunctionName(_CurrentTokenIt->Type))
 	{
-		//parse unary function
+		auto unaryFunction = CreateUnaryFunction(_CurrentTokenIt->Type);
+		_CurrentTokenIt++;
+
+		auto expressionResult = ParseExpression();
+
+		if (expressionResult.IsError())
+			return expressionResult.ToError();
+
+		if((_CurrentTokenIt - 1)->Type != TokenType::CLOSE_ROUND_BRACKET)
+			return Error("Expected closing round bracket after unary function", Range(CurrentTokenIndex() - 1, 1));
+
+		unaryFunction->SetChild(expressionResult.ToNode());
+		node = unaryFunction;
 
 		return true;
 	}
@@ -456,7 +471,31 @@ ParsingCheckResult Parser::CheckForBinaryFunctionName(std::shared_ptr<INode>& no
 {
 	if (IsTokenBinaryFunctionName(_CurrentTokenIt->Type))
 	{
-		//parse binary function
+		auto binaryFunction = CreateBinaryFunction(_CurrentTokenIt->Type);
+		_CurrentTokenIt++;
+
+		auto leftExpressionResult = ParseExpression();
+
+		if (leftExpressionResult.IsError())
+			return leftExpressionResult.ToError();
+
+		if ((_CurrentTokenIt - 1)->Type != TokenType::COMMA)
+			return Error("Expected comma between child expressions inside binary function", Range(CurrentTokenIndex() -1, 1));
+
+		_CurrentTokenIt++;
+
+		auto rightExpressionResult = ParseExpression();
+
+		if (rightExpressionResult.IsError())
+			return rightExpressionResult.ToError();
+
+		if((_CurrentTokenIt - 1)->Type != TokenType::CLOSE_ROUND_BRACKET)
+			return Error("Expected closing round bracket after binary function", Range(CurrentTokenIndex() -1, 1));
+
+		binaryFunction->SetLeft(leftExpressionResult.ToNode());
+		binaryFunction->SetRight(rightExpressionResult.ToNode());
+
+		node = binaryFunction;
 
 		return true;
 	}
@@ -468,7 +507,20 @@ ParsingCheckResult Parser::CheckForMinus(std::shared_ptr<INode>& node)
 {
 	if (IsTokenMinus(_CurrentTokenIt->Type))
 	{
-		
+		//auto list =
+		//{
+		//	&Parser::CheckForOpenRoundBracket,
+		//	&Parser::CheckForOpenSquareBracket,
+		//	&Parser::CheckForValue,
+		//	&Parser::CheckForUnaryFunctionName,
+		//	&Parser::CheckForBinaryFunctionName
+		//};
+
+		//for (auto& checkFunction : list)
+		//{
+		//	if ((this->*checkFunction)(node))
+		//		return true;
+		//}
 
 		return true;
 	}
