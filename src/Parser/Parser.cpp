@@ -471,7 +471,7 @@ ParsingCheckResult Parser::CheckForBinaryFunctionName(std::shared_ptr<INode>& no
 {
 	if (IsTokenBinaryFunctionName(_CurrentTokenIt->Type))
 	{
-		auto binaryFunction = CreateBinaryFunction(_CurrentTokenIt->Type);
+		auto binaryFunction = CreateBinaryNode(_CurrentTokenIt->Type);
 		_CurrentTokenIt++;
 
 		auto leftExpressionResult = ParseExpression();
@@ -507,20 +507,39 @@ ParsingCheckResult Parser::CheckForMinus(std::shared_ptr<INode>& node)
 {
 	if (IsTokenMinus(_CurrentTokenIt->Type))
 	{
-		//auto list =
-		//{
-		//	&Parser::CheckForOpenRoundBracket,
-		//	&Parser::CheckForOpenSquareBracket,
-		//	&Parser::CheckForValue,
-		//	&Parser::CheckForUnaryFunctionName,
-		//	&Parser::CheckForBinaryFunctionName
-		//};
+		auto list =
+		{
+			&Parser::CheckForOpenRoundBracket,
+			&Parser::CheckForOpenSquareBracket,
+			&Parser::CheckForValue,
+			&Parser::CheckForUnaryFunctionName,
+			&Parser::CheckForBinaryFunctionName
+		};
 
-		//for (auto& checkFunction : list)
-		//{
-		//	if ((this->*checkFunction)(node))
-		//		return true;
-		//}
+		std::shared_ptr<INode> negatedNode = nullptr;
+
+		auto checkFunctionIt = list.begin();
+		for (; checkFunctionIt != list.end(); checkFunctionIt++)
+		{
+			auto result = (this->*(*checkFunctionIt))(negatedNode);
+
+			if (result.IsError())
+				return result;
+
+			else if (result.ToBool())
+				break;
+		}
+
+		if (checkFunctionIt == list.end())
+			return Error("Invalid token after minus sign", Range(CurrentTokenIndex(), 1));
+
+		assert(negatedNode != nullptr);
+
+		auto minusNode = std::make_shared<ProductNode>();
+		minusNode->SetLeft(std::make_shared<ScalarNode>(-1));
+		minusNode->SetRight(negatedNode);
+
+		node = minusNode;
 
 		return true;
 	}
