@@ -143,101 +143,37 @@ NodeResult Parser::ParseExpression()
 	std::shared_ptr<INode> leftChildNode = nullptr;
 	std::shared_ptr<INode> rightChildNode = nullptr;
 
-	if (_CurrentTokenIt->Type == TokenType::OPEN_ROUND_BRACKET)
+	auto evenList =
 	{
-		_CurrentTokenIt++;
-		auto expressionResult = ParseExpression();
+		&Parser::CheckForOpenRoundBracket,
+		&Parser::CheckForOpenSquareBracket,
+		&Parser::CheckForValue,
+		&Parser::CheckForUnaryFunctionName,
+		&Parser::CheckForBinaryFunctionName,
+		&Parser::CheckForMinus
+	};
 
-		if (expressionResult.IsError())
-			return expressionResult;
+	auto checkFunctionIt = evenList.begin();
+	for (; checkFunctionIt != evenList.end(); checkFunctionIt++)
+	{
+		auto result = (this->*(*checkFunctionIt))(leftChildNode);
 
-		assert(_CurrentTokenIt->Type == TokenType::CLOSE_ROUND_BRACKET);
+		if (result.IsError())
+			return result.ToError();
+
+		else if (result.ToBool())
+			break;
+	}
+
+	while (!IsTokenExpressionEnd(_CurrentTokenIt->Type))
+	{
 		
-		leftChildNode = expressionResult.ToNode();
-
-	}
-	else if (_CurrentTokenIt->Type == TokenType::OPEN_SQUARE_BRACKET)
-	{
-		_CurrentTokenIt++;
-		auto expressionResult = ParseMatrix();
-
-		if (expressionResult.IsError())
-			return expressionResult;
-
-		assert(_CurrentTokenIt->Type == TokenType::CLOSE_SQUARE_BRACKET);
-
-		leftChildNode = expressionResult.ToNode();
-	}
-	else if (_CurrentTokenIt->Type == TokenType::OPEN_CURLY_BRACKET)
-	{
-		_CurrentTokenIt++;
-		auto expressionResult = ParseList();
-
-		if (expressionResult.IsError())
-			return expressionResult;
-
-		assert(_CurrentTokenIt->Type == TokenType::CLOSE_CURLY_BRACKET);
-
-		leftChildNode = expressionResult.ToNode();
-	}
-	else if (IsTokenValue(_CurrentTokenIt->Type))
-	{
-		leftChildNode = std::make_shared<ScalarNode>(GetScalarValue(*_CurrentTokenIt));
-		_CurrentTokenIt++;
-	}
-	else if (IsTokenMinus(_CurrentTokenIt->Type))
-	{
-		_CurrentTokenIt++;
-
-		if (_CurrentTokenIt->Type == TokenType::OPEN_ROUND_BRACKET)
-		{
-
-		}
-		else if (_CurrentTokenIt->Type == TokenType::OPEN_SQUARE_BRACKET)
-		{
-
-		}
-		else if (IsTokenValue(_CurrentTokenIt->Type))
-		{
-
-		}
-		else if (IsTokenUnaryFunctionName(_CurrentTokenIt->Type))
-		{
-			//parse unary function
-		}
-		else if (IsTokenBinaryFunctionName(_CurrentTokenIt->Type))
-		{
-			//parse binary function
-		}
-		else if (_CurrentTokenIt->Type == TokenType::STORAGE)
-		{
-			//try to access the storage
-		}
-		else
-		{
-			return Error("Invalid token", Range(CurrentTokenIndex(), 1));
-		}
-	}
-	else if (IsTokenUnaryFunctionName(_CurrentTokenIt->Type))
-	{
-		//parse unary function
-	}
-	else if (IsTokenBinaryFunctionName(_CurrentTokenIt->Type))
-	{
-		//parse binary function
-	}
-	else if (_CurrentTokenIt->Type == TokenType::STORAGE)
-	{
-		//try to access the storage
-	}
-	else
-	{
-		return Error("Invalid token", Range(CurrentTokenIndex(), 1));
 	}
 
+	if (fatherNode == nullptr)
+		return leftChildNode;
 
-
-
+	return fatherNode;
 }
 
 NodeResult Parser::ParseMatrix()
