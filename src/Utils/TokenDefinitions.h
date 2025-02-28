@@ -195,6 +195,27 @@ static bool IsTokenArithmeticOperator(TokenType token)
 		token == TokenType::POWER;
 }
 
+static int GetOperationPriority(TokenType token)
+{
+	switch (token)
+	{
+	case TokenType::PLUS:
+	case TokenType::MINUS:
+		return 1;
+
+	case TokenType::PRODUCT:
+	case TokenType::DIVIDE:
+	case TokenType::MODULUS:
+		return 2;
+
+	case TokenType::POWER:
+		return 3;
+
+	default:
+		return 0;
+	}
+}
+
 
 
 static bool IsTokenOpenBracket(TokenType token)

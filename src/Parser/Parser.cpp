@@ -139,9 +139,8 @@ size_t Parser::CurrentTokenIndex() const
 
 NodeResult Parser::ParseExpression()
 {
-	std::shared_ptr<INode> fatherNode = nullptr;
-	std::shared_ptr<INode> leftChildNode = nullptr;
-	std::shared_ptr<INode> rightChildNode = nullptr;
+	std::shared_ptr<INode> rootNode = nullptr;
+	std::shared_ptr<INode> currentNode = nullptr;
 
 	auto evenList =
 	{
@@ -156,7 +155,7 @@ NodeResult Parser::ParseExpression()
 	auto checkFunctionIt = evenList.begin();
 	for (; checkFunctionIt != evenList.end(); checkFunctionIt++)
 	{
-		auto result = (this->*(*checkFunctionIt))(leftChildNode);
+		auto result = (this->*(*checkFunctionIt))(rootNode);
 
 		if (result.IsError())
 			return result.ToError();
@@ -165,15 +164,53 @@ NodeResult Parser::ParseExpression()
 			break;
 	}
 
+	if (checkFunctionIt == evenList.end())
+		return Error("Invalid token", Range(CurrentTokenIndex(), 1));
+
+	int previousPriority = 4;
+
+	currentNode = rootNode;
+
 	while (!IsTokenExpressionEnd(_CurrentTokenIt->Type))
 	{
-		
+		std::shared_ptr<IBinaryNode> operationNode = nullptr;
+
+		auto [result, priority] = CheckForArithmeticOperator(operationNode);
+
+		if (result.IsError())
+			return result.ToError();
+
+		std::shared_ptr<INode> rightNode = nullptr;
+
+		auto checkFunctionIt = evenList.begin();
+		for (; checkFunctionIt != evenList.end(); checkFunctionIt++)
+		{
+			auto result = (this->*(*checkFunctionIt))(rightNode);
+
+			if (result.IsError())
+				return result.ToError();
+
+			else if (result.ToBool())
+				break;
+		}
+
+		if (checkFunctionIt == evenList.end())
+			return Error("Invalid token", Range(CurrentTokenIndex(), 1));
+
+
+		if (priority <= previousPriority)
+		{
+
+		}
+		else
+		{
+
+		}
+
+		previousPriority = priority;
 	}
 
-	if (fatherNode == nullptr)
-		return leftChildNode;
-
-	return fatherNode;
+	return rootNode;
 }
 
 NodeResult Parser::ParseMatrix()
@@ -481,4 +518,21 @@ ParsingCheckResult Parser::CheckForMinus(std::shared_ptr<INode>& node)
 	}
 
 	return false;
+}
+
+std::tuple<ParsingCheckResult, int> Parser::CheckForArithmeticOperator(std::shared_ptr<IBinaryNode>& node)
+{
+	if (IsTokenArithmeticOperator(_CurrentTokenIt->Type))
+	{
+		auto binaryOperation = CreateBinaryNode(_CurrentTokenIt->Type);
+		_CurrentTokenIt++;
+
+		node = binaryOperation;
+
+		int priority = GetOperationPriority(_CurrentTokenIt->Type);
+
+		return std::make_tuple(true, priority);
+	}
+
+	return std::make_tuple(Error("Expected an operation symbol"), -1);
 }

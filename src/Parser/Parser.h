@@ -62,7 +62,7 @@ private:
 	ParsingCheckResult CheckForUnaryFunctionName(std::shared_ptr<INode>& node);
 	ParsingCheckResult CheckForBinaryFunctionName(std::shared_ptr<INode>& node);
 
-
+	std::tuple<ParsingCheckResult, int> CheckForArithmeticOperator(std::shared_ptr<IBinaryNode>& node);
 
 	size_t CurrentTokenIndex() const;
 
