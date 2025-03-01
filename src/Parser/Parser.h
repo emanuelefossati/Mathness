@@ -64,6 +64,16 @@ private:
 
 	std::tuple<ParsingCheckResult, int> CheckForArithmeticOperator(std::shared_ptr<IBinaryNode>& node);
 
+	static int GetArithmeticOperatorNodePriority(SumNode& node) { return 1; }
+	static int GetArithmeticOperatorNodePriority(SubtractionNode& node) { return 1; }
+	static int GetArithmeticOperatorNodePriority(ProductNode& node) { return 2; }
+	static int GetArithmeticOperatorNodePriority(DivisionNode& node) { return 2; }
+	static int GetArithmeticOperatorNodePriority(ModulusNode& node) { return 2; }
+	static int GetArithmeticOperatorNodePriority(PowerNode& node) { return 3; }
+
+	template<typename InvalidType>
+	static int GetArithmeticOperatorNodePriority(InvalidType& node ) { return -1; }
+
 	size_t CurrentTokenIndex() const;
 
 };

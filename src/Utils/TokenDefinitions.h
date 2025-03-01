@@ -195,7 +195,7 @@ static bool IsTokenArithmeticOperator(TokenType token)
 		token == TokenType::POWER;
 }
 
-static int GetOperationPriority(TokenType token)
+static int GetOperationTokenPriority(TokenType token)
 {
 	switch (token)
 	{

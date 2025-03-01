@@ -200,12 +200,43 @@ NodeResult Parser::ParseExpression()
 
 		if (priority <= previousPriority)
 		{
+			//keep going up the tree until we find a node with a lower priority
+			while (true)
+			{
+				if (currentNode->GetParent() == nullptr)
+				{
+					break;
+				}
 
+				int parentOperationPriority = GetArithmeticOperatorNodePriority(*(currentNode->GetParent()));
+				assert(parentOperationPriority > 0);
+
+				if (parentOperationPriority < priority)
+				{
+					break;
+				}
+
+				currentNode = currentNode->GetParent();
+			}
 		}
-		else
+
+		operationNode->SetLeft(currentNode);
+		operationNode->SetRight(rightNode);
+
+
+		if (currentNode->GetParent() != nullptr)
 		{
+			std::shared_ptr<IBinaryNode> parent = std::dynamic_pointer_cast<IBinaryNode>(currentNode->GetParent());
+			assert(parent != nullptr);
 
+			parent->SetRight(operationNode);
+			operationNode->SetParent(parent);
 		}
+
+		currentNode->SetParent(operationNode);
+		rightNode->SetParent(operationNode);
+
+		currentNode = operationNode;
 
 		previousPriority = priority;
 	}
@@ -529,7 +560,7 @@ std::tuple<ParsingCheckResult, int> Parser::CheckForArithmeticOperator(std::shar
 
 		node = binaryOperation;
 
-		int priority = GetOperationPriority(_CurrentTokenIt->Type);
+		int priority = GetOperationTokenPriority(_CurrentTokenIt->Type);
 
 		return std::make_tuple(true, priority);
 	}
