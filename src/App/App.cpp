@@ -55,5 +55,7 @@ void App::Run()
 		{
 			std::cout << token.ToString() << std::endl;
 		}
+
+		Parser::GetInstance().Parse(tokens);
 	}
 }

@@ -19,6 +19,11 @@ public:
 	Range GetRange() const { return _TokenRange; }
 	void SetRange(Range range) { _TokenRange = range; }
 
+	virtual const int GetPriority() const 
+	{
+		return -1;
+	}
+
 
 protected:
 	std::shared_ptr<INode> _Parent = nullptr;

@@ -13,7 +13,7 @@
 #include "./Sqrt/SqrtNode.h"
 #include "./Tan/TanNode.h"
 
-std::shared_ptr<IUnaryNode> CreateUnaryFunction(TokenType tokenType)
+static std::shared_ptr<IUnaryNode> CreateUnaryFunction(TokenType tokenType)
 {
 	assert(IsTokenUnaryFunctionName(tokenType));
 

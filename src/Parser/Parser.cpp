@@ -11,19 +11,35 @@ void Parser::Parse(std::vector<LexingToken>& lexingTokens)
 {
 	Init();
 
-	auto error = SplitTokenList(lexingTokens);
+	//auto error = SplitTokenList(lexingTokens);
 
-	if (error.has_value())
+	//if (error.has_value())
+	//{
+	//	fmt::print(fmt::fg(fmt::color::red), "{}\n", error.value());
+	//	return;
+	//}
+
+	
+	_CurrentTokenIt = lexingTokens.begin();
+	_CurrentTokenItEnd = lexingTokens.end();
+	auto expressionResult = ParseExpression();
+
+	if (expressionResult.IsNode())
 	{
-		fmt::print(fmt::fg(fmt::color::red), "{}\n", error.value());
-		return;
+		auto result = expressionResult.ToNode()->GetResult();
+
+		fmt::println("Result: {}", result.ToScalar());
 	}
+
+	
 }
 
 void Parser::Init()
 {
 	_RValueTokenList = std::vector<LexingToken>();
 	_LValueTokenList = std::vector<LexingToken>();
+
+	//_CurrentTokenIt = _RValueTokenList.begin();
 }
 
 std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingTokens) const
@@ -171,7 +187,7 @@ NodeResult Parser::ParseExpression()
 
 	currentNode = rootNode;
 
-	while (!IsTokenExpressionEnd(_CurrentTokenIt->Type))
+	while (_CurrentTokenIt != _CurrentTokenItEnd && !IsTokenExpressionEnd(_CurrentTokenIt->Type))
 	{
 		std::shared_ptr<IBinaryNode> operationNode = nullptr;
 
@@ -208,7 +224,7 @@ NodeResult Parser::ParseExpression()
 					break;
 				}
 
-				int parentOperationPriority = GetArithmeticOperatorNodePriority(*(currentNode->GetParent()));
+				int parentOperationPriority = currentNode->GetParent()->GetPriority();
 				assert(parentOperationPriority > 0);
 
 				if (parentOperationPriority < priority)
@@ -226,8 +242,8 @@ NodeResult Parser::ParseExpression()
 
 		if (currentNode->GetParent() != nullptr)
 		{
-			std::shared_ptr<IBinaryNode> parent = std::dynamic_pointer_cast<IBinaryNode>(currentNode->GetParent());
-			assert(parent != nullptr);
+			assert(std::dynamic_pointer_cast<IBinaryNode>(currentNode->GetParent()) != nullptr);
+			std::shared_ptr<IBinaryNode> parent = std::static_pointer_cast<IBinaryNode>(currentNode->GetParent());
 
 			parent->SetRight(operationNode);
 			operationNode->SetParent(parent);
@@ -238,7 +254,12 @@ NodeResult Parser::ParseExpression()
 
 		currentNode = operationNode;
 
+		if (currentNode->GetParent() == nullptr)
+			rootNode = currentNode;
+
 		previousPriority = priority;
+
+
 	}
 
 	return rootNode;
@@ -351,26 +372,6 @@ NodeResult Parser::ParseList()
 {
 	return NodeResult();
 }
-
-
-std::optional<Error> Parser::CheckTokenType(TokenType tokenType) const
-{
-	bool isTokenTypeValid = false;
-	for (auto& checkFunction : _ExpectedTokenTypes)
-	{
-		if (checkFunction(_CurrentTokenIt->Type))
-		{
-			isTokenTypeValid = true;
-			break;
-		}
-	}
-
-	if (!isTokenTypeValid)
-		return Error("Invalid token type in this position", Range(CurrentTokenIndex(), 1));
-
-	return std::nullopt;
-}
-
 
 ParsingCheckResult Parser::CheckForOpenRoundBracket(std::shared_ptr<INode>& node)
 {
@@ -556,11 +557,11 @@ std::tuple<ParsingCheckResult, int> Parser::CheckForArithmeticOperator(std::shar
 	if (IsTokenArithmeticOperator(_CurrentTokenIt->Type))
 	{
 		auto binaryOperation = CreateBinaryNode(_CurrentTokenIt->Type);
-		_CurrentTokenIt++;
 
 		node = binaryOperation;
 
 		int priority = GetOperationTokenPriority(_CurrentTokenIt->Type);
+		_CurrentTokenIt++;
 
 		return std::make_tuple(true, priority);
 	}

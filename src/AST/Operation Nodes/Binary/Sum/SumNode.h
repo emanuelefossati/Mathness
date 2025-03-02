@@ -8,6 +8,8 @@ public:
 	SumNode() = default;
 
 	EvaluationResult GetResult() const override;
+
+	virtual const int GetPriority() const override { return 1;}
 	
 
 private:

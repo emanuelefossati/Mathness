@@ -12,7 +12,7 @@
 #include "Sum/SumNode.h"
 #include "Subtraction/SubtractionNode.h"
 
-std::shared_ptr<IBinaryNode> CreateBinaryNode(TokenType tokenType)
+static std::shared_ptr<IBinaryNode> CreateBinaryNode(TokenType tokenType)
 {
 	assert(IsTokenBinaryFunctionName(tokenType) || IsTokenArithmeticOperator(tokenType));
 

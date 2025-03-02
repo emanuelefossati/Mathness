@@ -7,7 +7,6 @@
 #include <vector>
 #include <functional>
 
-#include "./AST/Node.h"
 #include "./AST/Operation Nodes/Binary/BinaryOperations.h"
 #include "./AST/Operation Nodes/Unary/UnaryOperations.h"
 #include "./AST/Value Nodes/ValueNodes.h"
@@ -24,6 +23,9 @@ public:
 	void Parse(std::vector<LexingToken>& lexingTokens);
 	static Parser& GetInstance();
 
+
+
+
 private:
 	std::vector<LexingToken> _RValueTokenList;
 	std::vector<LexingToken> _LValueTokenList;
@@ -31,12 +33,7 @@ private:
 	std::shared_ptr<std::vector<LexingToken>> _CurrentValueTokenList;
 
 	std::vector<LexingToken>::iterator _CurrentTokenIt;
-
-	//wanna create a list of functions that check the token type
-	std::vector<std::function<bool(TokenType)>> _ExpectedTokenTypes;
-
-	std::optional<Error> CheckTokenType(TokenType tokenType) const;
-
+	std::vector<LexingToken>::iterator _CurrentTokenItEnd;
 	
 	Parser() = default;
 
@@ -64,16 +61,8 @@ private:
 
 	std::tuple<ParsingCheckResult, int> CheckForArithmeticOperator(std::shared_ptr<IBinaryNode>& node);
 
-	static int GetArithmeticOperatorNodePriority(SumNode& node) { return 1; }
-	static int GetArithmeticOperatorNodePriority(SubtractionNode& node) { return 1; }
-	static int GetArithmeticOperatorNodePriority(ProductNode& node) { return 2; }
-	static int GetArithmeticOperatorNodePriority(DivisionNode& node) { return 2; }
-	static int GetArithmeticOperatorNodePriority(ModulusNode& node) { return 2; }
-	static int GetArithmeticOperatorNodePriority(PowerNode& node) { return 3; }
-
-	template<typename InvalidType>
-	static int GetArithmeticOperatorNodePriority(InvalidType& node ) { return -1; }
-
 	size_t CurrentTokenIndex() const;
+
+
 
 };
