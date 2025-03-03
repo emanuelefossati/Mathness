@@ -65,6 +65,12 @@ struct EvaluationResult : public std::variant<scalar_t, Matrix, List, Error>
 		return std::get<List>(*this);
 	}
 
+	constexpr Error ToError() const
+	{
+		assert(IsError());
+		return std::get<Error>(*this);
+	}
+
 
 	static constexpr std::tuple<scalar_t, Matrix> RetrieveScalarAndMatrix(const EvaluationResult& leftResult, const EvaluationResult& rightResult)
 	{
