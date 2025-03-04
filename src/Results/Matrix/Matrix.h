@@ -39,4 +39,6 @@ struct Matrix
 
 	const std::string ToString() const;
 	static const Matrix Identity(size_t size);
+
+	
 };

@@ -22,11 +22,13 @@ void Parser::Parse(std::vector<LexingToken>& lexingTokens)
 	
 	_CurrentTokenIt = lexingTokens.begin();
 	_CurrentTokenItEnd = lexingTokens.end();
+
 	auto expressionResult = ParseExpression();
 
 	if (!expressionResult.IsNode())
 	{
 		fmt::print(fmt::fg(fmt::color::red), "{}\n", expressionResult.ToError());
+		return;
 	}
 
 	auto result = expressionResult.ToNode()->GetResult();
@@ -37,7 +39,19 @@ void Parser::Parse(std::vector<LexingToken>& lexingTokens)
 		return;
 	}
 
-	fmt::println("Result: {}", result.ToScalar());
+	if (result.IsScalar())
+	{
+		fmt::println("Result: {}", result.ToScalar());
+		return;
+	}
+
+	if (result.IsMatrix())
+	{
+		auto matrix = result.ToMatrix();
+
+		fmt::println("Result: {}", matrix.ToString());
+		return;
+	}
 
 	
 }
@@ -170,11 +184,13 @@ NodeResult Parser::ParseExpression()
 
 	auto evenList =
 	{
+		&Parser::CheckForUnaryFunctionName,
+		&Parser::CheckForBinaryFunctionName,
+
 		&Parser::CheckForOpenRoundBracket,
 		&Parser::CheckForOpenSquareBracket,
 		&Parser::CheckForValue,
-		&Parser::CheckForUnaryFunctionName,
-		&Parser::CheckForBinaryFunctionName,
+
 		&Parser::CheckForMinus
 	};
 
@@ -291,7 +307,9 @@ NodeResult Parser::ParseExpression()
 
 NodeResult Parser::ParseMatrix()
 {
-	assert((_CurrentTokenIt-1)->Type == TokenType::OPEN_SQUARE_BRACKET);
+	assert((_CurrentTokenIt)->Type == TokenType::OPEN_SQUARE_BRACKET);
+	
+	_CurrentTokenIt++;
 
 	std::shared_ptr<MatrixNode> matrixNode = std::make_shared<MatrixNode>();
 	std::vector<std::shared_ptr<INode>> elements;
@@ -318,9 +336,7 @@ NodeResult Parser::ParseMatrix()
 		if(_CurrentTokenIt->Type != TokenType::COMMA && 
 			_CurrentTokenIt->Type != TokenType::SEMICOLON && 
 			_CurrentTokenIt->Type != TokenType::CLOSE_SQUARE_BRACKET)
-			return Error("Invalid token", Range(CurrentTokenIndex(), 1));
-
-		elements.push_back(currentElement);
+			return Error("Invalid token after matrix element", Range(CurrentTokenIndex(), 1));
 
 		if (!firstRowDone)
 		{
@@ -343,8 +359,6 @@ NodeResult Parser::ParseMatrix()
 				matrixNode->SetElements(elements);
 				matrixNode->SetRows(matrixRowCount);
 				matrixNode->SetColumns(matrixColumnCount);
-
-				_CurrentTokenIt++;
 
 				return matrixNode;
 			}
@@ -371,7 +385,6 @@ NodeResult Parser::ParseMatrix()
 			else if (_CurrentTokenIt->Type == TokenType::CLOSE_SQUARE_BRACKET)
 			{
 				assert(matrixColumnCount > 0);
-				assert(matrixRowCount > 1);
 
 				if (currentColumnCount != matrixColumnCount)
 				{
@@ -384,11 +397,13 @@ NodeResult Parser::ParseMatrix()
 				matrixNode->SetRows(matrixRowCount);
 				matrixNode->SetColumns(matrixColumnCount);
 
-				_CurrentTokenIt++;
+				
 
 				return matrixNode;
 			}
 		}
+
+		_CurrentTokenIt++;
 	}
 }
 
@@ -422,7 +437,6 @@ ParsingCheckResult Parser::CheckForOpenSquareBracket(std::shared_ptr<INode>& nod
 {
 	if (_CurrentTokenIt->Type == TokenType::OPEN_SQUARE_BRACKET)
 	{
-		_CurrentTokenIt++;
 		auto expressionResult = ParseMatrix();
 
 		if (expressionResult.IsError())
@@ -430,6 +444,8 @@ ParsingCheckResult Parser::CheckForOpenSquareBracket(std::shared_ptr<INode>& nod
 
 		if(_CurrentTokenIt->Type != TokenType::CLOSE_SQUARE_BRACKET)
 			return Error("Expected closing square bracket after matrix", Range(CurrentTokenIndex(), 1));
+
+		_CurrentTokenIt++;
 
 		node = expressionResult.ToNode();
 
@@ -479,6 +495,11 @@ ParsingCheckResult Parser::CheckForUnaryFunctionName(std::shared_ptr<INode>& nod
 		auto unaryFunction = CreateUnaryFunction(_CurrentTokenIt->Type);
 		_CurrentTokenIt++;
 
+		if (_CurrentTokenIt->Type != TokenType::OPEN_ROUND_BRACKET)
+			return Error("Expected opening round bracket after function declaration", Range(CurrentTokenIndex(), 1));
+
+		_CurrentTokenIt++;
+
 		auto expressionResult = ParseExpression();
 
 		if (expressionResult.IsError())
@@ -486,6 +507,8 @@ ParsingCheckResult Parser::CheckForUnaryFunctionName(std::shared_ptr<INode>& nod
 
 		if((_CurrentTokenIt)->Type != TokenType::CLOSE_ROUND_BRACKET)
 			return Error("Expected closing round bracket after unary function", Range(CurrentTokenIndex(), 1));
+
+		_CurrentTokenIt++;
 
 		unaryFunction->SetChild(expressionResult.ToNode());
 		node = unaryFunction;
@@ -501,6 +524,11 @@ ParsingCheckResult Parser::CheckForBinaryFunctionName(std::shared_ptr<INode>& no
 	if (IsTokenBinaryFunctionName(_CurrentTokenIt->Type))
 	{
 		auto binaryFunction = CreateBinaryNode(_CurrentTokenIt->Type);
+		_CurrentTokenIt++;
+
+		if (_CurrentTokenIt->Type != TokenType::OPEN_ROUND_BRACKET)
+			return Error("Expected opening round bracket after function declaration", Range(CurrentTokenIndex(), 1));
+
 		_CurrentTokenIt++;
 
 		auto leftExpressionResult = ParseExpression();
@@ -520,6 +548,8 @@ ParsingCheckResult Parser::CheckForBinaryFunctionName(std::shared_ptr<INode>& no
 
 		if(_CurrentTokenIt->Type != TokenType::CLOSE_ROUND_BRACKET)
 			return Error("Expected closing round bracket after binary function", Range(CurrentTokenIndex(), 1));
+
+		_CurrentTokenIt++;
 
 		binaryFunction->SetLeft(leftExpressionResult.ToNode());
 		binaryFunction->SetRight(rightExpressionResult.ToNode());

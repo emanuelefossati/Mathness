@@ -41,10 +41,6 @@ private:
 
 	std::optional<Error> SplitTokenList(std::vector<LexingToken>& lexingTokens);
 	std::optional<Error> CheckBrackets(std::vector<LexingToken>& lexingTokens) const;
-
-
-
-
 	
 	NodeResult ParseExpression();
 	NodeResult ParseMatrix();

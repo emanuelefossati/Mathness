@@ -20,7 +20,7 @@ EvaluationResult CrossNode::GetResult() const
 	if (!leftMatrix.IsVector() || !rightMatrix.IsVector())
 		return Error("cross product is only defined for vectors", _TokenRange);
 
-	if (leftMatrix.Rows != 3 || rightMatrix.Rows != 3)
+	if (leftMatrix.Elements.size() != 3 || rightMatrix.Elements.size() != 3)
 		return Error("cross product is only defined for vectors of size 3", _TokenRange);
 
 	return leftMatrix.Cross(rightMatrix);

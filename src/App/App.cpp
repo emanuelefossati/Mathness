@@ -50,11 +50,11 @@ void App::Run()
 			continue;
 		}
 
-		std::cout << "Tokens: " << std::endl;
-		for (auto& token : tokens)
-		{
-			std::cout << token.ToString() << std::endl;
-		}
+		//std::cout << "Tokens: " << std::endl;
+		//for (auto& token : tokens)
+		//{
+		//	std::cout << token.ToString() << std::endl;
+		//}
 
 		Parser::GetInstance().Parse(tokens);
 	}

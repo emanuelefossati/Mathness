@@ -186,6 +186,10 @@ const Matrix Matrix::Inverse() const
 		}
 	}
 
+
+	result.Rows = Rows;
+	result.Columns = Columns;
+
 	result = result.Transpose();
 
 	return result;
@@ -296,27 +300,26 @@ const Matrix Matrix::Normalize() const
 
 const std::string Matrix::ToString() const
 {
-	std::string result = "[";
+	std::string result = "\n";
 
 	for (size_t i = 0; i < Rows; i++)
 	{
-		result += "[";
 
 		for (size_t j = 0; j < Columns; j++)
 		{
 			result += std::to_string((*this)(i, j));
 
 			if (j != Columns - 1)
-				result += ", ";
+				result += "\t";
 		}
 
-		result += "]";
+		result += "\n";
 
-		if (i != Rows - 1)
-			result += ", ";
+		//if (i != Rows - 1)
+		//	result += ", ";
 	}
 
-	result += "]";
+	result += "\n";
 
 	return result;
 }
