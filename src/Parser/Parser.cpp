@@ -425,6 +425,8 @@ ParsingCheckResult Parser::CheckForOpenRoundBracket(std::shared_ptr<INode>& node
 		if(_CurrentTokenIt->Type != TokenType::CLOSE_ROUND_BRACKET)
 			return Error("Expected closing round bracket after inner expression", Range(CurrentTokenIndex(), 1));
 
+		_CurrentTokenIt++;
+
 		node = expressionResult.ToNode();
 
 		return true;
@@ -467,6 +469,8 @@ ParsingCheckResult Parser::CheckForOpenCurlyBracket(std::shared_ptr<INode>& node
 
 		if(_CurrentTokenIt->Type != TokenType::CLOSE_CURLY_BRACKET)
 			return Error("Expected closing curly bracket after list", Range(CurrentTokenIndex(), 1));
+
+		_CurrentTokenIt++;
 
 		node = expressionResult.ToNode();
 
