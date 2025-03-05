@@ -19,6 +19,16 @@ void Parser::Parse(std::vector<LexingToken>& lexingTokens)
 	//	return;
 	//}
 
+	auto& lastToken = lexingTokens.back();
+
+	if (IsTokenArithmeticOperator(lastToken.Type) || 
+		IsTokenOpenBracket(lastToken.Type) || 
+		IsTokenUnaryFunctionName(lastToken.Type) || 
+		IsTokenBinaryFunctionName(lastToken.Type))
+	{
+		fmt::print(fmt::fg(fmt::color::red), "Invalid token at the end of the expression\n");
+		return;
+	}
 	
 	_CurrentTokenIt = lexingTokens.begin();
 	_CurrentTokenItEnd = lexingTokens.end();

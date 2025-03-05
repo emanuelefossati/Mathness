@@ -12,7 +12,7 @@ EvaluationResult FactorialNode::GetResult() const
 
 	scalar_t value = childResult.ToScalar();
 
-	if (value < 0 || EvaluationResult::IsScalarInteger(value))
+	if (value < 0 || !EvaluationResult::IsScalarInteger(value))
 		return Error("Factorial function can only be applied to non-negative integers", _TokenRange);
 
 	return Factorial(value);

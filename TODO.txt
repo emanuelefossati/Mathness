@@ -2,3 +2,4 @@
 - refactor error_t type into a struct in order to also store the index of the reference token  
 - implement a way to switch between rad and degree input format in trigonometric functions
 - implement a way to represent infinity as a scalar_t value (if not already implemented by c++)
+- create a way to store the result of a computation in a variable
