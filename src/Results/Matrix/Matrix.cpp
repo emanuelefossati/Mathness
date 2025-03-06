@@ -307,6 +307,8 @@ const std::string Matrix::ToString() const
 
 		for (size_t j = 0; j < Columns; j++)
 		{
+
+
 			result += std::to_string((*this)(i, j));
 
 			if (j != Columns - 1)

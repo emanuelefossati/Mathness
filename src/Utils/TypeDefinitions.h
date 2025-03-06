@@ -2,6 +2,7 @@
 
 #include <string>
 #include <cmath>
+#include <numbers>
 
 
 using error_t = std::string;
@@ -27,3 +28,9 @@ struct Error : std::string
 };
 
 using scalar_t = double;
+
+
+static bool double_equals(double a, double b)
+{
+	return std::abs(a - b) < std::numeric_limits<double>::min();
+}
