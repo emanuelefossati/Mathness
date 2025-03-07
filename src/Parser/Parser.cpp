@@ -7,9 +7,8 @@ Parser& Parser::GetInstance()
 	return instance;
 }
 
-void Parser::Parse(std::vector<LexingToken>& lexingTokens)
+NodeResult Parser::Parse(std::vector<LexingToken>& lexingTokens)
 {
-	Init();
 
 	//auto error = SplitTokenList(lexingTokens);
 
@@ -19,6 +18,8 @@ void Parser::Parse(std::vector<LexingToken>& lexingTokens)
 	//	return;
 	//}
 
+	CheckBrackets(lexingTokens);
+
 	auto& lastToken = lexingTokens.back();
 
 	if (IsTokenArithmeticOperator(lastToken.Type) || 
@@ -26,52 +27,13 @@ void Parser::Parse(std::vector<LexingToken>& lexingTokens)
 		IsTokenUnaryFunctionName(lastToken.Type) || 
 		IsTokenBinaryFunctionName(lastToken.Type))
 	{
-		fmt::print(fmt::fg(fmt::color::red), "Invalid token at the end of the expression\n");
-		return;
+		return Error("Invalid token at the end of the expression");
 	}
 	
 	_CurrentTokenIt = lexingTokens.begin();
-	_CurrentTokenItEnd = lexingTokens.end();
+	_TokenItEnd = lexingTokens.end();
 
-	auto expressionResult = ParseExpression();
-
-	if (!expressionResult.IsNode())
-	{
-		fmt::print(fmt::fg(fmt::color::red), "{}\n", expressionResult.ToError());
-		return;
-	}
-
-	auto result = expressionResult.ToNode()->GetResult();
-
-	if (result.IsError())
-	{
-		fmt::print(fmt::fg(fmt::color::red), "{}\n", result.ToError());
-		return;
-	}
-
-	if (result.IsScalar())
-	{
-		fmt::println("Result: {}", result.ToScalar());
-		return;
-	}
-
-	if (result.IsMatrix())
-	{
-		auto matrix = result.ToMatrix();
-
-		fmt::println("Result: {}", matrix.ToString());
-		return;
-	}
-
-	
-}
-
-void Parser::Init()
-{
-	_RValueTokenList = std::vector<LexingToken>();
-	_LValueTokenList = std::vector<LexingToken>();
-
-	//_CurrentTokenIt = _RValueTokenList.begin();
+	return ParseExpression();	
 }
 
 std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingTokens) const
@@ -150,37 +112,34 @@ std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingToken
 	return std::nullopt;
 }
 
-std::optional<Error> Parser::SplitTokenList(std::vector<LexingToken>& lexingTokens)
+std::tuple<std::vector<LexingToken>, std::vector<LexingToken>, std::optional<Error>> Parser::SplitTokenList(std::vector<LexingToken>& lexingTokens)
 {
-	size_t equalsCount = 0;
+	std::vector<LexingToken>::iterator tokenIt = lexingTokens.begin();
+	
+	std::vector<LexingToken> _LValueTokenList;
+	std::vector<LexingToken> _RValueTokenList;
 
-	for (size_t tokenIndex = 0; tokenIndex < lexingTokens.size(); tokenIndex++)
-	{
-		auto& token = lexingTokens[tokenIndex];
-		if (token.Type == TokenType::EQUALS)
-		{
-			equalsCount++;
-			continue;
-		}
+	for (; tokenIt != lexingTokens.end() && tokenIt->Type != TokenType::EQUALS; tokenIt++)
+		_LValueTokenList.push_back(*tokenIt);
 
-		if (equalsCount == 0)
-			_LValueTokenList.push_back(token);
-		else if (equalsCount == 1)
-			_LValueTokenList.push_back(token);
-		else
-			return Error("Multiple equals signs found", Range(tokenIndex-1, 1));
-	}
+	if (tokenIt == lexingTokens.end())
+		return std::make_tuple(_LValueTokenList, _RValueTokenList, std::nullopt);
 
-	if (equalsCount == 0)
-		return Error("No equals sign found");
+	//skip the equals sign
+	tokenIt++;
 
-	return std::nullopt;
+	for (; tokenIt != lexingTokens.end() && tokenIt->Type != TokenType::EQUALS; tokenIt++)
+		_RValueTokenList.push_back(*tokenIt);
+
+	if (tokenIt == lexingTokens.end())
+		return std::make_tuple(_LValueTokenList, _RValueTokenList, std::nullopt);
+
+	return std::make_tuple(_LValueTokenList, _RValueTokenList, Error("Multiple equals signs found"));
 }
 
 size_t Parser::CurrentTokenIndex() const
 {
-	//assert(_CurrentValueTokenList != nullptr);
-	//assert(_CurrentTokenIt != _CurrentValueTokenList->end());
+	assert(_CurrentTokenIt != _TokenItEnd);
 
 	//return std::distance(_CurrentValueTokenList->begin(), _CurrentTokenIt);
 
@@ -223,7 +182,7 @@ NodeResult Parser::ParseExpression()
 
 	currentNode = rootNode;
 
-	while (_CurrentTokenIt != _CurrentTokenItEnd && !IsTokenExpressionEnd(_CurrentTokenIt->Type))
+	while (_CurrentTokenIt != _TokenItEnd && !IsTokenExpressionEnd(_CurrentTokenIt->Type))
 	{
 		std::shared_ptr<IBinaryNode> operationNode = nullptr;
 

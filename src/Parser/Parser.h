@@ -20,26 +20,24 @@
 class Parser
 {
 public:
-	void Parse(std::vector<LexingToken>& lexingTokens);
 	static Parser& GetInstance();
+
+	NodeResult Parse(std::vector<LexingToken>& lexingTokens);
+	std::tuple<std::vector<LexingToken>, std::vector<LexingToken>, std::optional<Error>> SplitTokenList(std::vector<LexingToken>& lexingTokens);
 
 
 
 
 private:
-	std::vector<LexingToken> _RValueTokenList;
-	std::vector<LexingToken> _LValueTokenList;
-
 	std::shared_ptr<std::vector<LexingToken>> _CurrentValueTokenList;
 
 	std::vector<LexingToken>::iterator _CurrentTokenIt;
-	std::vector<LexingToken>::iterator _CurrentTokenItEnd;
+	std::vector<LexingToken>::iterator _TokenItEnd;
 	
 	Parser() = default;
 
 	void Init();
 
-	std::optional<Error> SplitTokenList(std::vector<LexingToken>& lexingTokens);
 	std::optional<Error> CheckBrackets(std::vector<LexingToken>& lexingTokens) const;
 	
 	NodeResult ParseExpression();

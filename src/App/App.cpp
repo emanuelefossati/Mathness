@@ -1,6 +1,6 @@
 #include "App.h"
-#include <iostream>
 #include <string>
+#include <iostream>
 
 App& App::GetInstance()
 {
@@ -45,17 +45,55 @@ void App::Run()
 		auto [tokens, error] = Lexer::GetInstance().Lex(input);
 
 		if (error.has_value())
-		{
+		{	
 			std::cout << error.value() << std::endl;
 			continue;
 		}
 
-		//std::cout << "Tokens: " << std::endl;
-		//for (auto& token : tokens)
-		//{
-		//	std::cout << token.ToString() << std::endl;
-		//}
+		auto [leftExpressionTokenList, rightExpressionTokenList, splitError] = Parser::GetInstance().SplitTokenList(tokens);
 
-		Parser::GetInstance().Parse(tokens);
+		if (splitError.has_value())
+		{
+			std::cout << splitError.value() << std::endl;
+			continue;
+		}
+
+		if (rightExpressionTokenList.size() == 0)
+		{
+			rightExpressionTokenList = leftExpressionTokenList;
+		}
+
+
+		NodeResult expressionTree = Parser::GetInstance().Parse(rightExpressionTokenList);
+
+		if (!expressionTree.IsNode())
+		{
+			fmt::print(fmt::fg(fmt::color::red), "{}\n", expressionTree.ToError());
+			continue;
+		}
+
+		auto result = expressionTree.ToNode()->GetResult();
+
+		if (result.IsError())
+		{
+			fmt::print(fmt::fg(fmt::color::red), "{}\n", result.ToError());
+			continue;
+		}
+
+		if (result.IsScalar())
+		{
+			fmt::println("Result: {}", result.ToScalar());
+			continue;
+		}
+
+		if (result.IsMatrix())
+		{
+			auto matrix = result.ToMatrix();
+
+			fmt::println("Result: {}", matrix.ToString());
+			continue;
+		}
+
+
 	}
 }
