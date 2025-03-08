@@ -47,10 +47,18 @@ struct EvaluationResult : public std::variant<scalar_t, Matrix, List, Error>
 		return value == std::floor(value);
 	}
 
-	constexpr scalar_t ToScalar() const
+	scalar_t ToScalar() const
 	{
 		assert(IsScalar());
-		return std::get<scalar_t>(*this);
+
+		auto scalar = std::get<scalar_t>(*this);
+
+		if (scalar == std::floor(scalar))
+		{
+			return std::floor(scalar);
+		}
+
+		return scalar;
 	}
 
 	constexpr Matrix ToMatrix() const

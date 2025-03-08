@@ -9,16 +9,10 @@ Parser& Parser::GetInstance()
 
 NodeResult Parser::Parse(std::vector<LexingToken>& lexingTokens)
 {
+	auto error = CheckBrackets(lexingTokens);
 
-	//auto error = SplitTokenList(lexingTokens);
-
-	//if (error.has_value())
-	//{
-	//	fmt::print(fmt::fg(fmt::color::red), "{}\n", error.value());
-	//	return;
-	//}
-
-	CheckBrackets(lexingTokens);
+	if (error.has_value())
+		return error.value();
 
 	auto& lastToken = lexingTokens.back();
 
@@ -458,6 +452,11 @@ ParsingCheckResult Parser::CheckForValue(std::shared_ptr<INode>& node)
 		return true;
 	}
 
+	return false;
+}
+
+ParsingCheckResult Parser::CheckForIdentifier(std::shared_ptr<INode>& node)
+{
 	return false;
 }
 

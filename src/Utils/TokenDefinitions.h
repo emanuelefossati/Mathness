@@ -216,8 +216,6 @@ static int GetOperationTokenPriority(TokenType token)
 	}
 }
 
-
-
 static bool IsTokenOpenBracket(TokenType token)
 {
 	return

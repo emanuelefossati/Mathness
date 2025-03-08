@@ -1,6 +1,7 @@
 #include "App.h"
 #include <string>
 #include <iostream>
+#include "Storage/StorageHandler.h"
 
 App& App::GetInstance()
 {
@@ -56,11 +57,6 @@ void App::Run()
 		{
 			std::cout << splitError.value() << std::endl;
 			continue;
-		}
-
-		if (rightExpressionTokenList.size() == 0)
-		{
-			rightExpressionTokenList = leftExpressionTokenList;
 		}
 
 
