@@ -58,7 +58,11 @@ void App::Run()
 			std::cout << splitError.value() << std::endl;
 			continue;
 		}
-
+		
+		if (rightExpressionTokenList.empty())
+		{
+			rightExpressionTokenList = leftExpressionTokenList;
+		}
 
 		NodeResult expressionTree = Parser::GetInstance().Parse(rightExpressionTokenList);
 

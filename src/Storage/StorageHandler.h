@@ -9,7 +9,7 @@ public:
 	static StorageHandler& GetInstance();
 
 	void StoreValue(std::string_view key, EvaluationResult& value);
-	std::optional<EvaluationResult> GetValue(std::string_view key) const;
+	EvaluationResult GetValue(std::string_view key) const;
 
 private:
 	StorageHandler() = default;

@@ -63,11 +63,16 @@ std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingToken
 
 		else if (token.Type == TokenType::CLOSE_ROUND_BRACKET)
 		{
+			if (openBrackets.empty())
+			{
+				return Error("Unmatched closing round bracket", Range{ tokenIndex });
+			}
+
 			auto& lastOpenBracket = openBrackets.top();
 
 			if (lastOpenBracket.Type != ROUND)
 			{
-				return Error("Invalid closing round bracket in this position", tokenIndex);
+				return Error("Invalid closing round bracket in this position", Range{ tokenIndex });
 			}
 
 			openBrackets.pop();
@@ -75,11 +80,16 @@ std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingToken
 
 		else if (token.Type == TokenType::CLOSE_SQUARE_BRACKET)
 		{
+			if (openBrackets.empty())
+			{
+				return Error("Unmatched closing square bracket", Range{ tokenIndex });
+			}
+
 			auto& lastOpenBracket = openBrackets.top();
 
 			if (lastOpenBracket.Type != SQUARE)
 			{
-				return Error("Invalid closing square bracket in this position", tokenIndex);
+				return Error("Invalid closing square bracket in this position", Range{ tokenIndex });
 			}
 
 			openBrackets.pop();
@@ -87,12 +97,19 @@ std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingToken
 
 		else if (token.Type == TokenType::CLOSE_CURLY_BRACKET)
 		{
+			if (openBrackets.empty())
+			{
+				return Error("Unmatched closing curly bracket", Range{ tokenIndex });
+			}
+
 			auto& lastOpenBracket = openBrackets.top();
 
 			if (lastOpenBracket.Type != CURLY)
 			{
-				return Error("Invalid closing curly bracket in this position", tokenIndex);
+				return Error("Invalid closing curly bracket in this position", Range{ tokenIndex });
 			}
+
+
 
 			openBrackets.pop();
 		}
@@ -457,6 +474,33 @@ ParsingCheckResult Parser::CheckForValue(std::shared_ptr<INode>& node)
 
 ParsingCheckResult Parser::CheckForIdentifier(std::shared_ptr<INode>& node)
 {
+	if (_CurrentTokenIt->Type == TokenType::STORAGE)
+	{
+		auto identifierNode = std::make_shared<IdentifierNode>(_CurrentTokenIt->Value);
+
+		_CurrentTokenIt++;
+
+		if (_CurrentTokenIt->Type != TokenType::OPEN_SQUARE_BRACKET)
+		{
+			node = identifierNode;
+			return true;
+		}
+
+		_CurrentTokenIt++;
+
+		std::vector<std::shared_ptr<INode>> indexExpressions;
+
+		auto indexExpressionResult = ParseExpression();
+
+		if (_CurrentTokenIt->Type != TokenType::CLOSE_SQUARE_BRACKET)
+			return Error("Expected closing square bracket after index expression", Range(CurrentTokenIndex(), 1));
+
+
+
+
+		return true;
+	}
+
 	return false;
 }
 
