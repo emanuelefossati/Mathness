@@ -14,7 +14,7 @@ public:
 	void SetName(std::string name) { _Name = name; }
 	std::string GetName() const { return _Name; }
 
-	EvaluationResult GetResult() const override { return _Name; }
+	EvaluationResult GetResult() const;
 
 
 

@@ -15,10 +15,10 @@ EvaluationResult IdentifierNode::GetResult() const
 
 		if (!expressionResult.IsScalar())
 		{
-			return EvaluationError("Index expression must be a scalar");
+			return Error("Index expression must be a scalar");
 		}
 
-		indices.push_back(expressionResult.GetScalar());
+		indices.push_back(expressionResult.ToScalar());
 	}
 
 	EvaluationResult value = StorageHandler::GetInstance().GetValue(_Name);
@@ -32,7 +32,7 @@ EvaluationResult IdentifierNode::GetResult() const
 	{
 		if (!indices.empty())
 		{
-			return EvaluationError("Scalar value cannot be indexed");
+			return Error("Scalar value cannot be indexed");
 		}	
 		
 		return value;
@@ -51,10 +51,10 @@ EvaluationResult IdentifierNode::GetResult() const
 
 		if (indices.size() == 1)
 		{
-			return matrix.Elements[indices.size[0]];
+			return matrix.Elements[indices[0]];
 		}
 
-		return EvaluationError("Vector cannot be indexed with more than one index");
+		return Error("Vector cannot be indexed with more than one index");
 	}
 
 	if (indices.empty())
@@ -65,7 +65,7 @@ EvaluationResult IdentifierNode::GetResult() const
 
 	if (indices.size() != 2)
 	{
-		return EvaluationError("Matrix must be indexed with two indices");
+		return Error("Matrix must be indexed with two indices");
 	}
 
 	size_t row = indices[0];
@@ -73,12 +73,12 @@ EvaluationResult IdentifierNode::GetResult() const
 
 	if (row >= matrix.Rows)
 	{
-		return EvaluationError("Row index out of bounds");
+		return Error("Row index out of bounds");
 	}
 
 	if (column >= matrix.Columns)
 	{
-		return EvaluationError("Column index out of bounds");
+		return Error("Column index out of bounds");
 	}
 
 	return matrix(row, column);

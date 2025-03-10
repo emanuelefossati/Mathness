@@ -179,9 +179,7 @@ static bool IsTokenScalarValue(TokenType token)
 
 static bool IsTokenValue(TokenType token)
 {
-	return
-		IsTokenScalarValue(token) ||
-		token == TokenType::STORAGE;
+	return IsTokenScalarValue(token);
 }
 
 static bool IsTokenArithmeticOperator(TokenType token)

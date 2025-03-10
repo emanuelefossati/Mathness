@@ -170,6 +170,7 @@ NodeResult Parser::ParseExpression()
 		&Parser::CheckForOpenRoundBracket,
 		&Parser::CheckForOpenSquareBracket,
 		&Parser::CheckForValue,
+		& Parser::CheckForIdentifier,
 
 		&Parser::CheckForMinus
 	};
@@ -480,23 +481,29 @@ ParsingCheckResult Parser::CheckForIdentifier(std::shared_ptr<INode>& node)
 
 		_CurrentTokenIt++;
 
-		if (_CurrentTokenIt->Type != TokenType::OPEN_SQUARE_BRACKET)
+		if (_CurrentTokenIt == _TokenItEnd || _CurrentTokenIt->Type != TokenType::OPEN_SQUARE_BRACKET)
 		{
 			node = identifierNode;
 			return true;
 		}
 
-		_CurrentTokenIt++;
+		do 
+		{
+			_CurrentTokenIt++;
 
-		std::vector<std::shared_ptr<INode>> indexExpressions;
+			auto indexExpressionResult = ParseExpression();
 
-		auto indexExpressionResult = ParseExpression();
+			if (_CurrentTokenIt->Type != TokenType::CLOSE_SQUARE_BRACKET)
+				return Error("Expected closing square bracket after index expression", Range(CurrentTokenIndex(), 1));
 
-		if (_CurrentTokenIt->Type != TokenType::CLOSE_SQUARE_BRACKET)
-			return Error("Expected closing square bracket after index expression", Range(CurrentTokenIndex(), 1));
+			identifierNode->AddIndexExpression(indexExpressionResult.ToNode());
+
+			_CurrentTokenIt++;
 
 
+		} while (_CurrentTokenIt != _TokenItEnd && _CurrentTokenIt->Type == TokenType::OPEN_SQUARE_BRACKET);
 
+		node = identifierNode;
 
 		return true;
 	}
@@ -589,6 +596,7 @@ ParsingCheckResult Parser::CheckForMinus(std::shared_ptr<INode>& node)
 			&Parser::CheckForOpenRoundBracket,
 			&Parser::CheckForOpenSquareBracket,
 			&Parser::CheckForValue,
+			& Parser::CheckForIdentifier,
 			&Parser::CheckForUnaryFunctionName,
 			&Parser::CheckForBinaryFunctionName
 		};

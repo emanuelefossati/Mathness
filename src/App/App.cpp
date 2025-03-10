@@ -59,7 +59,9 @@ void App::Run()
 			continue;
 		}
 		
-		if (rightExpressionTokenList.empty())
+		bool isAssignment = !rightExpressionTokenList.empty();
+
+		if (!isAssignment)
 		{
 			rightExpressionTokenList = leftExpressionTokenList;
 		}
@@ -73,6 +75,11 @@ void App::Run()
 		}
 
 		auto result = expressionTree.ToNode()->GetResult();
+
+		if (isAssignment)
+		{
+			// Parse the identifier and store the result
+		}
 
 		if (result.IsError())
 		{
