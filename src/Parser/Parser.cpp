@@ -30,6 +30,33 @@ NodeResult Parser::Parse(std::vector<LexingToken>& lexingTokens)
 	return ParseExpression();	
 }
 
+NodeResult Parser::ParseLValue(std::vector<LexingToken>& lexingTokens)
+{
+	auto error = CheckBrackets(lexingTokens);
+
+	if (error.has_value())
+		return error.value();
+
+	_CurrentTokenIt = lexingTokens.begin();
+	_TokenItEnd = lexingTokens.end();
+
+	std::shared_ptr<INode> identifierNode = nullptr;
+
+	ParsingCheckResult result = CheckForIdentifier(identifierNode);
+
+	if (result.IsError())
+		return result.ToError();
+
+	if (!result.ToBool())
+		return Error("Expected an identifier", Range(CurrentTokenIndex(), 1));
+
+	if (_CurrentTokenIt != _TokenItEnd)
+		return Error("Invalid token after identifier", Range(CurrentTokenIndex(), 1));
+
+	return identifierNode;
+
+}
+
 std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingTokens) const
 {
 	enum BracketType {
@@ -392,6 +419,8 @@ NodeResult Parser::ParseList()
 {
 	return NodeResult();
 }
+
+
 
 ParsingCheckResult Parser::CheckForOpenRoundBracket(std::shared_ptr<INode>& node)
 {

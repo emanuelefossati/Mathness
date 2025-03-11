@@ -78,7 +78,21 @@ void App::Run()
 
 		if (isAssignment)
 		{
-			// Parse the identifier and store the result
+			NodeResult lValue = Parser::GetInstance().ParseLValue(leftExpressionTokenList);
+
+			if (!lValue.IsNode())
+			{
+				fmt::print(fmt::fg(fmt::color::red), "{}\n", lValue.ToError());
+				continue;
+			}
+
+			assert(std::dynamic_pointer_cast<IdentifierNode>(lValue.ToNode()) != nullptr);
+			auto lValueNode = std::static_pointer_cast<IdentifierNode>(lValue.ToNode());
+
+
+			StorageHandler::GetInstance().StoreValue(lValueNode->GetName(), result);
+
+
 		}
 
 		if (result.IsError())

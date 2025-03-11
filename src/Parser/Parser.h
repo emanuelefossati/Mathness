@@ -23,6 +23,7 @@ public:
 	static Parser& GetInstance();
 
 	NodeResult Parse(std::vector<LexingToken>& lexingTokens);
+	NodeResult ParseLValue(std::vector<LexingToken>& lexingTokens);
 
 	std::tuple<std::vector<LexingToken>, std::vector<LexingToken>, std::optional<Error>> SplitTokenList(std::vector<LexingToken>& lexingTokens);
 
@@ -44,7 +45,7 @@ private:
 	NodeResult ParseExpression();
 	NodeResult ParseMatrix();
 	NodeResult ParseList();
-	NodeResult ParseMathOperation();
+
 
 	ParsingCheckResult CheckForOpenRoundBracket(std::shared_ptr<INode>& node);
 	ParsingCheckResult CheckForOpenSquareBracket(std::shared_ptr<INode>& node);
