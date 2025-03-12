@@ -8,8 +8,8 @@ class StorageHandler
 public:
 	static StorageHandler& GetInstance();
 
-	void StoreValue(std::string_view key, EvaluationResult& value);
-	EvaluationResult GetValue(std::string_view key) const;
+	std::optional<Error> StoreValue(std::string_view key, EvaluationResult& value, std::vector<int> indices = {});
+	EvaluationResult GetValue(std::string_view key, std::vector<int> indices = {}) const;
 
 private:
 	StorageHandler() = default;

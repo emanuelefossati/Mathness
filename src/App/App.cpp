@@ -89,7 +89,17 @@ void App::Run()
 			assert(std::dynamic_pointer_cast<IdentifierNode>(lValue.ToNode()) != nullptr);
 			auto lValueNode = std::static_pointer_cast<IdentifierNode>(lValue.ToNode());
 
+			auto& indexExpressionNodes = lValueNode->GetIndexExpressions();
 
+			if (!indexExpressionNodes.empty())
+			{
+				StorageHandler::GetInstance().StoreValue(lValueNode->GetName(), result);
+				continue;
+			}
+
+			
+			std::vector<std::shared_ptr<INode>> indexExpressions;
+			
 			StorageHandler::GetInstance().StoreValue(lValueNode->GetName(), result);
 
 
