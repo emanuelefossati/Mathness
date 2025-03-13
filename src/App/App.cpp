@@ -28,7 +28,7 @@ void App::Run()
 	
 	while (true)
 	{
-		std::cout << ">> ";
+		std::cout << ">>> ";
 		std::getline(std::cin, input);
 
 		ClearComments(input);
@@ -50,6 +50,8 @@ void App::Run()
 			std::cout << error.value() << std::endl;
 			continue;
 		}
+
+
 
 		auto [leftExpressionTokenList, rightExpressionTokenList, splitError] = Parser::GetInstance().SplitTokenList(tokens);
 
@@ -89,18 +91,22 @@ void App::Run()
 			assert(std::dynamic_pointer_cast<IdentifierNode>(lValue.ToNode()) != nullptr);
 			auto lValueNode = std::static_pointer_cast<IdentifierNode>(lValue.ToNode());
 
-			auto& indexExpressionNodes = lValueNode->GetIndexExpressions();
 
-			if (!indexExpressionNodes.empty())
+			auto [indices, indexError] = lValueNode->GetIndexExpressions();
+
+			if (!indexError.empty())
 			{
-				StorageHandler::GetInstance().StoreValue(lValueNode->GetName(), result);
+				fmt::print(fmt::fg(fmt::color::red), "{}\n", indexError);
 				continue;
 			}
 
+			auto storeError = StorageHandler::GetInstance().StoreValue(lValueNode->GetName(), result, indices);
 			
-			std::vector<std::shared_ptr<INode>> indexExpressions;
-			
-			StorageHandler::GetInstance().StoreValue(lValueNode->GetName(), result);
+			if (storeError.has_value())
+			{
+				fmt::print(fmt::fg(fmt::color::red), "{}\n", storeError.value());
+				continue;
+			}
 
 
 		}
@@ -113,7 +119,7 @@ void App::Run()
 
 		if (result.IsScalar())
 		{
-			fmt::println("Result: {}", result.ToScalar());
+			fmt::print("{}\n", result.ToScalar());
 			continue;
 		}
 
@@ -121,7 +127,7 @@ void App::Run()
 		{
 			auto matrix = result.ToMatrix();
 
-			fmt::println("Result: {}", matrix.ToString());
+			fmt::print("{}\n", matrix.ToString());
 			continue;
 		}
 

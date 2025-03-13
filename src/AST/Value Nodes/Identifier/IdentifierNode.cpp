@@ -83,3 +83,27 @@ EvaluationResult IdentifierNode::GetResult() const
 
 	return matrix(row, column);
 }
+
+std::tuple<std::vector<int>, Error> IdentifierNode::GetIndexExpressions()
+{
+	std::vector<int> indices;
+
+	for (auto& index : _IndexExpressions)
+	{
+		EvaluationResult expressionResult = index->GetResult();
+
+		if (expressionResult.IsError())
+		{
+			return { {}, expressionResult.ToError() };
+		}
+
+		if (!expressionResult.IsScalar())
+		{
+			return { {}, Error("Index expression must be a scalar") };
+		}
+
+		indices.push_back(expressionResult.ToScalar());
+	}
+
+	return { indices, Error() };
+}

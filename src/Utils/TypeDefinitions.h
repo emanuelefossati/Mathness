@@ -3,6 +3,7 @@
 #include <string>
 #include <cmath>
 #include <numbers>
+#include <fmt/core.h>
 
 
 using error_t = std::string;

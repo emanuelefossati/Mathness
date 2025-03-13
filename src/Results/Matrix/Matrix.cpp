@@ -300,28 +300,23 @@ const Matrix Matrix::Normalize() const
 
 const std::string Matrix::ToString() const
 {
-	std::string result = "\n";
+	std::string result = "";
 
-	for (size_t i = 0; i < Rows; i++)
+	for (size_t r = 0; r < Rows; r++)
 	{
 
-		for (size_t j = 0; j < Columns; j++)
+		for (size_t c = 0; c < Columns; c++)
 		{
 
+			auto element = (*this)(r, c);
+			result += fmt::format("{}", element);
 
-			result += std::to_string((*this)(i, j));
-
-			if (j != Columns - 1)
+			if (c != Columns - 1)
 				result += "\t";
 		}
 
 		result += "\n";
-
-		//if (i != Rows - 1)
-		//	result += ", ";
 	}
-
-	result += "\n";
 
 	return result;
 }
