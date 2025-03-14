@@ -22,6 +22,8 @@ void ClearComments(std::string& input)
 	}
 }
 
+
+
 void App::Run()
 {
 	std::string input;
@@ -51,13 +53,11 @@ void App::Run()
 			continue;
 		}
 
-
-
 		auto [leftExpressionTokenList, rightExpressionTokenList, splitError] = Parser::GetInstance().SplitTokenList(tokens);
 
 		if (splitError.has_value())
 		{
-			std::cout << splitError.value() << std::endl;
+			fmt::print(fmt::fg(fmt::color::red), "{}\n", splitError.value());
 			continue;
 		}
 		
@@ -80,57 +80,68 @@ void App::Run()
 
 		if (isAssignment)
 		{
-			NodeResult lValue = Parser::GetInstance().ParseLValue(leftExpressionTokenList);
+			auto assignmentError = HandleAssignment(leftExpressionTokenList, result);
 
-			if (!lValue.IsNode())
+			if (assignmentError.has_value())
 			{
-				fmt::print(fmt::fg(fmt::color::red), "{}\n", lValue.ToError());
+				fmt::print(fmt::fg(fmt::color::red), "{}\n", assignmentError.value());
 				continue;
 			}
 
-			assert(std::dynamic_pointer_cast<IdentifierNode>(lValue.ToNode()) != nullptr);
-			auto lValueNode = std::static_pointer_cast<IdentifierNode>(lValue.ToNode());
-
-
-			auto [indices, indexError] = lValueNode->GetIndexExpressions();
-
-			if (!indexError.empty())
-			{
-				fmt::print(fmt::fg(fmt::color::red), "{}\n", indexError);
-				continue;
-			}
-
-			auto storeError = StorageHandler::GetInstance().StoreValue(lValueNode->GetName(), result, indices);
-			
-			if (storeError.has_value())
-			{
-				fmt::print(fmt::fg(fmt::color::red), "{}\n", storeError.value());
-				continue;
-			}
-
-
 		}
 
-		if (result.IsError())
-		{
-			fmt::print(fmt::fg(fmt::color::red), "{}\n", result.ToError());
-			continue;
-		}
-
-		if (result.IsScalar())
-		{
-			fmt::print("{}\n", result.ToScalar());
-			continue;
-		}
-
-		if (result.IsMatrix())
-		{
-			auto matrix = result.ToMatrix();
-
-			fmt::print("{}\n", matrix.ToString());
-			continue;
-		}
+		ShowResult(result);
+	}
+}
 
 
+std::optional<Error> App::HandleAssignment(std::vector<LexingToken>& leftExpressionTokenList, EvaluationResult& rightExpressionResult)
+{
+	NodeResult lValue = Parser::GetInstance().ParseLValue(leftExpressionTokenList);
+
+	if (!lValue.IsNode())
+	{
+		return lValue.ToError();
+	}
+
+	assert(std::dynamic_pointer_cast<IdentifierNode>(lValue.ToNode()) != nullptr);
+	auto lValueNode = std::static_pointer_cast<IdentifierNode>(lValue.ToNode());
+
+
+	auto [indices, indexError] = lValueNode->GetIndexExpressions();
+
+	if (!indexError.empty())
+	{
+		return indexError;
+	}
+
+	auto storeError = StorageHandler::GetInstance().StoreValue(lValueNode->GetName(), rightExpressionResult, indices);
+
+	if (storeError.has_value())
+	{
+		return storeError.value();
+	}
+}
+
+void App::ShowResult(EvaluationResult& result) const
+{
+	if (result.IsError())
+	{
+		fmt::print(fmt::fg(fmt::color::red), "{}\n", result.ToError());
+		return;
+	}
+
+	if (result.IsScalar())
+	{
+		fmt::print("{}\n", result.ToScalar());
+		return;
+	}
+
+	if (result.IsMatrix())
+	{
+		auto matrix = result.ToMatrix();
+
+		fmt::print("{}\n", matrix.ToString());
+		return;
 	}
 }

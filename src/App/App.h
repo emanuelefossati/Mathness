@@ -13,5 +13,8 @@ public:
 
 private:
 	App() = default;
+
+	void ShowResult(EvaluationResult& result) const;
+	static std::optional<Error> HandleAssignment(std::vector<LexingToken>& leftExpressionTokenList, EvaluationResult& rightExpressionResult);
 };
 
