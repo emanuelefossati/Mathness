@@ -88,7 +88,7 @@ void Lexer::CheckForIdentifier()
 	_Tokens.emplace_back(type, identifier);
 }
 
-std::tuple<std::vector<LexingToken>, std::optional<error_t>> Lexer::Lex(std::string& input)
+std::tuple<std::vector<LexingToken>, std::optional<Error>> Lexer::Lex(std::string& input)
 {
 	assert(input.size() > 0);
 
@@ -118,14 +118,14 @@ std::tuple<std::vector<LexingToken>, std::optional<error_t>> Lexer::Lex(std::str
 
 		if (!CheckForSymbol())
 		{
-			error_t error = std::format("Invalid token '{}' found at index {}", _Input[_Index], _Index);
+			error_t errorMessage = std::format("Invalid token '{}' found at index {}", _Input[_Index], _Index);
 
 			if (_Tokens.size() > 0)
 			{
-				error += std::format(" after token '{}'", _Tokens.back().Value);
+				errorMessage += std::format(" after token '{}'", _Tokens.back().Value);
 			}
 
-			return { _Tokens, error};
+			return { _Tokens, Error(errorMessage)};
 		}
 	}
 

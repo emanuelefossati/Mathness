@@ -16,5 +16,6 @@ private:
 
 	void ShowResult(EvaluationResult& result) const;
 	static std::optional<Error> HandleAssignment(std::vector<LexingToken>& leftExpressionTokenList, EvaluationResult& rightExpressionResult);
+	static void PrintError(Error error);
 };
 

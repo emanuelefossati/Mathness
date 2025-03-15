@@ -12,7 +12,7 @@
 class Lexer
 {
 public:
-	std::tuple<std::vector<LexingToken>, std::optional<error_t>>Lex(std::string& input);
+	std::tuple<std::vector<LexingToken>, std::optional<Error>>Lex(std::string& input);
 	static Lexer& GetInstance();
 
 private:

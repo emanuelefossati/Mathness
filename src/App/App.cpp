@@ -49,7 +49,7 @@ void App::Run()
 
 		if (error.has_value())
 		{	
-			std::cout << error.value() << std::endl;
+			App::PrintError(error.value());
 			continue;
 		}
 
@@ -57,7 +57,7 @@ void App::Run()
 
 		if (splitError.has_value())
 		{
-			fmt::print(fmt::fg(fmt::color::red), "{}\n", splitError.value());
+			App::PrintError(splitError.value());
 			continue;
 		}
 		
@@ -72,7 +72,7 @@ void App::Run()
 
 		if (!expressionTree.IsNode())
 		{
-			fmt::print(fmt::fg(fmt::color::red), "{}\n", expressionTree.ToError());
+			App::PrintError(expressionTree.ToError());
 			continue;
 		}
 
@@ -84,7 +84,7 @@ void App::Run()
 
 			if (assignmentError.has_value())
 			{
-				fmt::print(fmt::fg(fmt::color::red), "{}\n", assignmentError.value());
+				App::PrintError(assignmentError.value());
 				continue;
 			}
 
@@ -121,13 +121,15 @@ std::optional<Error> App::HandleAssignment(std::vector<LexingToken>& leftExpress
 	{
 		return storeError.value();
 	}
+
+	return std::nullopt;
 }
 
 void App::ShowResult(EvaluationResult& result) const
 {
 	if (result.IsError())
 	{
-		fmt::print(fmt::fg(fmt::color::red), "{}\n", result.ToError());
+		App::PrintError(result.ToError());
 		return;
 	}
 
@@ -144,4 +146,9 @@ void App::ShowResult(EvaluationResult& result) const
 		fmt::print("{}\n", matrix.ToString());
 		return;
 	}
+}
+
+void App::PrintError(Error error)
+{
+	fmt::print(fmt::fg(fmt::color::red), "{}\n", error);
 }
