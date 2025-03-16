@@ -33,14 +33,15 @@ public:
 private:
 	std::shared_ptr<std::vector<LexingToken>> _CurrentValueTokenList;
 
-	std::vector<LexingToken>::iterator _CurrentTokenIt;
+	std::vector<LexingToken>::iterator _TokenItBegin;
 	std::vector<LexingToken>::iterator _TokenItEnd;
+	std::vector<LexingToken>::iterator _CurrentTokenIt;
 	
 	Parser() = default;
 
 	void Init();
 
-	std::optional<Error> CheckBrackets(std::vector<LexingToken>& lexingTokens) const;
+	std::optional<Error> CheckBrackets() const;
 	
 	NodeResult ParseExpression();
 	NodeResult ParseMatrix();
@@ -59,6 +60,10 @@ private:
 	std::tuple<ParsingCheckResult, int> CheckForArithmeticOperator(std::shared_ptr<IBinaryNode>& node);
 
 	size_t CurrentTokenIndex() const;
+
+	std::tuple<std::optional<std::string>, std::optional<std::string>> GetTokenSymbolsBetween(std::vector<LexingToken>::iterator actualTokenIt) const;
+	Error CreateErrorMessageWithAdjacentTokens(std::string message, std::vector<LexingToken>::iterator actualTokenIt) const;
+
 
 
 

@@ -9,7 +9,11 @@ Parser& Parser::GetInstance()
 
 NodeResult Parser::Parse(std::vector<LexingToken>& lexingTokens)
 {
-	auto error = CheckBrackets(lexingTokens);
+	_TokenItBegin = lexingTokens.begin();
+	_CurrentTokenIt = lexingTokens.begin();
+	_TokenItEnd = lexingTokens.end();
+
+	auto error = CheckBrackets();
 
 	if (error.has_value())
 		return error.value();
@@ -24,21 +28,21 @@ NodeResult Parser::Parse(std::vector<LexingToken>& lexingTokens)
 		return Error("Invalid token at the end of the expression");
 	}
 	
-	_CurrentTokenIt = lexingTokens.begin();
-	_TokenItEnd = lexingTokens.end();
+
 
 	return ParseExpression();	
 }
 
 NodeResult Parser::ParseLValue(std::vector<LexingToken>& lexingTokens)
 {
-	auto error = CheckBrackets(lexingTokens);
+	_TokenItBegin = lexingTokens.begin();
+	_CurrentTokenIt = lexingTokens.begin();
+	_TokenItEnd = lexingTokens.end();
+
+	auto error = CheckBrackets();
 
 	if (error.has_value())
 		return error.value();
-
-	_CurrentTokenIt = lexingTokens.begin();
-	_TokenItEnd = lexingTokens.end();
 
 	std::shared_ptr<INode> identifierNode = nullptr;
 
@@ -48,16 +52,15 @@ NodeResult Parser::ParseLValue(std::vector<LexingToken>& lexingTokens)
 		return result.ToError();
 
 	if (!result.ToBool())
-		return Error("Expected an identifier", Range(CurrentTokenIndex(), 1));
+		return Error("Expected an identifier at the beginning of left value expression");
 
-	if (_CurrentTokenIt != _TokenItEnd)
-		return Error("Invalid token after identifier", Range(CurrentTokenIndex(), 1));
+	assert(_CurrentTokenIt != _TokenItEnd);
 
 	return identifierNode;
 
 }
 
-std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingTokens) const
+std::optional<Error> Parser::CheckBrackets() const
 {
 	enum BracketType {
 		ROUND,
@@ -68,23 +71,23 @@ std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingToken
 	struct BracketData
 	{
 		BracketType Type;
-		size_t Index;
+		std::vector<LexingToken>::iterator  IndexIt;
 	};
 
 	std::stack<BracketData> openBrackets;
 
-	for (size_t tokenIndex = 0; tokenIndex < lexingTokens.size(); tokenIndex++)
+	for (std::vector<LexingToken>::iterator index = _TokenItBegin; index != _TokenItEnd; index++)
 	{
-		auto& token = lexingTokens[tokenIndex];
+		auto& token = *index;
 		
 		if (token.Type == TokenType::OPEN_ROUND_BRACKET)
-			openBrackets.emplace(BracketType::ROUND);
+			openBrackets.emplace(BracketType::ROUND, index);
 
 		else if (token.Type == TokenType::OPEN_SQUARE_BRACKET)
-			openBrackets.emplace(BracketType::SQUARE);
+			openBrackets.emplace(BracketType::SQUARE, index);
 
 		else if (token.Type == TokenType::OPEN_CURLY_BRACKET)
-			openBrackets.emplace(BracketType::CURLY);
+			openBrackets.emplace(BracketType::CURLY, index);
 
 		//closing brackets
 
@@ -92,14 +95,14 @@ std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingToken
 		{
 			if (openBrackets.empty())
 			{
-				return Error("Unmatched closing round bracket", Range{ tokenIndex });
+				return CreateErrorMessageWithAdjacentTokens("Unmatched ')'", index);
 			}
 
 			auto& lastOpenBracket = openBrackets.top();
 
 			if (lastOpenBracket.Type != ROUND)
 			{
-				return Error("Invalid closing round bracket in this position", Range{ tokenIndex });
+				return CreateErrorMessageWithAdjacentTokens("Invalid ')'", index);
 			}
 
 			openBrackets.pop();
@@ -109,14 +112,14 @@ std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingToken
 		{
 			if (openBrackets.empty())
 			{
-				return Error("Unmatched closing square bracket", Range{ tokenIndex });
+				return CreateErrorMessageWithAdjacentTokens("Unmatched ']'", index);
 			}
 
 			auto& lastOpenBracket = openBrackets.top();
 
 			if (lastOpenBracket.Type != SQUARE)
 			{
-				return Error("Invalid closing square bracket in this position", Range{ tokenIndex });
+				return CreateErrorMessageWithAdjacentTokens("Invalid ']'", index);
 			}
 
 			openBrackets.pop();
@@ -126,14 +129,14 @@ std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingToken
 		{
 			if (openBrackets.empty())
 			{
-				return Error("Unmatched closing curly bracket", Range{ tokenIndex });
+				return CreateErrorMessageWithAdjacentTokens("Unmatched '}'", index);
 			}
 
 			auto& lastOpenBracket = openBrackets.top();
 
 			if (lastOpenBracket.Type != CURLY)
 			{
-				return Error("Invalid closing curly bracket in this position", Range{ tokenIndex });
+				return CreateErrorMessageWithAdjacentTokens("Invalid '}'", index);
 			}
 
 
@@ -144,7 +147,7 @@ std::optional<Error> Parser::CheckBrackets(std::vector<LexingToken>& lexingToken
 
 	if (!openBrackets.empty())
 	{
-		return Error("Unclosed bracket", Range(openBrackets.top().Index));
+		return CreateErrorMessageWithAdjacentTokens("Unclosed bracket", openBrackets.top().IndexIt);
 	}
 
 	return std::nullopt;
@@ -175,14 +178,14 @@ std::tuple<std::vector<LexingToken>, std::vector<LexingToken>, std::optional<Err
 	return std::make_tuple(_LValueTokenList, _RValueTokenList, Error("Multiple equals signs found"));
 }
 
-size_t Parser::CurrentTokenIndex() const
-{
-	assert(_CurrentTokenIt != _TokenItEnd);
-
-	//return std::distance(_CurrentValueTokenList->begin(), _CurrentTokenIt);
-
-	return 0;
-}
+//size_t Parser::CurrentTokenIndex() const
+//{
+//	assert(_CurrentTokenIt != _TokenItEnd);
+//
+//	//return std::distance(_CurrentValueTokenList->begin(), _CurrentTokenIt);
+//
+//	return 0;
+//}
 
 NodeResult Parser::ParseExpression()
 {
@@ -197,7 +200,7 @@ NodeResult Parser::ParseExpression()
 		&Parser::CheckForOpenRoundBracket,
 		&Parser::CheckForOpenSquareBracket,
 		&Parser::CheckForValue,
-		& Parser::CheckForIdentifier,
+		&Parser::CheckForIdentifier,
 
 		&Parser::CheckForMinus
 	};
@@ -215,7 +218,7 @@ NodeResult Parser::ParseExpression()
 	}
 
 	if (checkFunctionIt == evenList.end())
-		return Error("Invalid token", Range(CurrentTokenIndex(), 1));
+		return CreateErrorMessageWithAdjacentTokens("Invalid token", _CurrentTokenIt);
 
 	int previousPriority = 4;
 
@@ -245,7 +248,7 @@ NodeResult Parser::ParseExpression()
 		}
 
 		if (checkFunctionIt == evenList.end())
-			return Error("Invalid token", Range(CurrentTokenIndex(), 1));
+			return CreateErrorMessageWithAdjacentTokens("Invalid token", _CurrentTokenIt);
 
 
 		if (priority <= previousPriority)
@@ -344,7 +347,7 @@ NodeResult Parser::ParseMatrix()
 		if(_CurrentTokenIt->Type != TokenType::COMMA && 
 			_CurrentTokenIt->Type != TokenType::SEMICOLON && 
 			_CurrentTokenIt->Type != TokenType::CLOSE_SQUARE_BRACKET)
-			return Error("Invalid token after matrix element", Range(CurrentTokenIndex(), 1));
+			return CreateErrorMessageWithAdjacentTokens("Invalid token after matrix element", _CurrentTokenIt);
 
 		if (!firstRowDone)
 		{
@@ -377,14 +380,14 @@ NodeResult Parser::ParseMatrix()
 
 			if (currentColumnCount > matrixColumnCount)
 			{
-				return Error("Invalid matrix size delimiter", Range(CurrentTokenIndex(), 1));
+				return CreateErrorMessageWithAdjacentTokens("Invalid matrix size delimiter", _CurrentTokenIt);
 			}
 
 			if (_CurrentTokenIt->Type == TokenType::SEMICOLON)
 			{
 				if (currentColumnCount != matrixColumnCount)
 				{
-					return Error("Invalid matrix size delimiter", Range(CurrentTokenIndex(), 1));
+					return CreateErrorMessageWithAdjacentTokens("Invalid matrix size delimiter", _CurrentTokenIt);
 				}
 
 				matrixRowCount++;
@@ -396,7 +399,7 @@ NodeResult Parser::ParseMatrix()
 
 				if (currentColumnCount != matrixColumnCount)
 				{
-					return Error("Invalid matrix size delimiter", Range(CurrentTokenIndex(), 1));
+					return CreateErrorMessageWithAdjacentTokens("Invalid matrix size delimiter", _CurrentTokenIt);
 				}
 
 				matrixRowCount++;
@@ -433,7 +436,7 @@ ParsingCheckResult Parser::CheckForOpenRoundBracket(std::shared_ptr<INode>& node
 			return expressionResult.ToError();
 
 		if(_CurrentTokenIt->Type != TokenType::CLOSE_ROUND_BRACKET)
-			return Error("Expected closing round bracket after inner expression", Range(CurrentTokenIndex(), 1));
+			return CreateErrorMessageWithAdjacentTokens("Expected ')' to close inner expression", _CurrentTokenIt);
 
 		_CurrentTokenIt++;
 
@@ -455,7 +458,7 @@ ParsingCheckResult Parser::CheckForOpenSquareBracket(std::shared_ptr<INode>& nod
 			return expressionResult.ToError();
 
 		if(_CurrentTokenIt->Type != TokenType::CLOSE_SQUARE_BRACKET)
-			return Error("Expected closing square bracket after matrix", Range(CurrentTokenIndex(), 1));
+			return CreateErrorMessageWithAdjacentTokens("Expected ']' to close matrix", _CurrentTokenIt);
 
 		_CurrentTokenIt++;
 
@@ -478,7 +481,7 @@ ParsingCheckResult Parser::CheckForOpenCurlyBracket(std::shared_ptr<INode>& node
 			return expressionResult.ToError();
 
 		if(_CurrentTokenIt->Type != TokenType::CLOSE_CURLY_BRACKET)
-			return Error("Expected closing curly bracket after list", Range(CurrentTokenIndex(), 1));
+			return CreateErrorMessageWithAdjacentTokens("Expected '}' to close list", _CurrentTokenIt);
 
 		_CurrentTokenIt++;
 
@@ -523,7 +526,7 @@ ParsingCheckResult Parser::CheckForIdentifier(std::shared_ptr<INode>& node)
 			auto indexExpressionResult = ParseExpression();
 
 			if (_CurrentTokenIt->Type != TokenType::CLOSE_SQUARE_BRACKET)
-				return Error("Expected closing square bracket after index expression", Range(CurrentTokenIndex(), 1));
+				return CreateErrorMessageWithAdjacentTokens("Expected ']' to close index expression", _CurrentTokenIt);
 
 			identifierNode->AddIndexExpression(indexExpressionResult.ToNode());
 
@@ -548,7 +551,7 @@ ParsingCheckResult Parser::CheckForUnaryFunctionName(std::shared_ptr<INode>& nod
 		_CurrentTokenIt++;
 
 		if (_CurrentTokenIt->Type != TokenType::OPEN_ROUND_BRACKET)
-			return Error("Expected opening round bracket after function declaration", Range(CurrentTokenIndex(), 1));
+			return CreateErrorMessageWithAdjacentTokens("Expected '(' to define function argument", _CurrentTokenIt);
 
 		_CurrentTokenIt++;
 
@@ -558,7 +561,7 @@ ParsingCheckResult Parser::CheckForUnaryFunctionName(std::shared_ptr<INode>& nod
 			return expressionResult.ToError();
 
 		if((_CurrentTokenIt)->Type != TokenType::CLOSE_ROUND_BRACKET)
-			return Error("Expected closing round bracket after unary function", Range(CurrentTokenIndex(), 1));
+			return CreateErrorMessageWithAdjacentTokens("Expected ')' to end up function declaration", _CurrentTokenIt);
 
 		_CurrentTokenIt++;
 
@@ -579,7 +582,7 @@ ParsingCheckResult Parser::CheckForBinaryFunctionName(std::shared_ptr<INode>& no
 		_CurrentTokenIt++;
 
 		if (_CurrentTokenIt->Type != TokenType::OPEN_ROUND_BRACKET)
-			return Error("Expected opening round bracket after function declaration", Range(CurrentTokenIndex(), 1));
+			return CreateErrorMessageWithAdjacentTokens("Expected '(' to define function argument", _CurrentTokenIt);
 
 		_CurrentTokenIt++;
 
@@ -589,7 +592,7 @@ ParsingCheckResult Parser::CheckForBinaryFunctionName(std::shared_ptr<INode>& no
 			return leftExpressionResult.ToError();
 
 		if (_CurrentTokenIt->Type != TokenType::COMMA)
-			return Error("Expected comma between child expressions inside binary function", Range(CurrentTokenIndex(), 1));
+			return CreateErrorMessageWithAdjacentTokens("Expected ',' to separate argument expressions inside binary function", _CurrentTokenIt);
 
 		_CurrentTokenIt++;
 
@@ -599,7 +602,7 @@ ParsingCheckResult Parser::CheckForBinaryFunctionName(std::shared_ptr<INode>& no
 			return rightExpressionResult.ToError();
 
 		if(_CurrentTokenIt->Type != TokenType::CLOSE_ROUND_BRACKET)
-			return Error("Expected closing round bracket after binary function", Range(CurrentTokenIndex(), 1));
+			return CreateErrorMessageWithAdjacentTokens("Expected ')' to end up function declaration", _CurrentTokenIt);
 
 		_CurrentTokenIt++;
 
@@ -625,7 +628,7 @@ ParsingCheckResult Parser::CheckForMinus(std::shared_ptr<INode>& node)
 			&Parser::CheckForOpenRoundBracket,
 			&Parser::CheckForOpenSquareBracket,
 			&Parser::CheckForValue,
-			& Parser::CheckForIdentifier,
+			&Parser::CheckForIdentifier,
 			&Parser::CheckForUnaryFunctionName,
 			&Parser::CheckForBinaryFunctionName
 		};
@@ -645,7 +648,7 @@ ParsingCheckResult Parser::CheckForMinus(std::shared_ptr<INode>& node)
 		}
 
 		if (checkFunctionIt == list.end())
-			return Error("Invalid token after minus sign", Range(CurrentTokenIndex(), 1));
+			return CreateErrorMessageWithAdjacentTokens("Invalid token", _CurrentTokenIt);
 
 		assert(negatedNode != nullptr);
 
@@ -675,5 +678,44 @@ std::tuple<ParsingCheckResult, int> Parser::CheckForArithmeticOperator(std::shar
 		return std::make_tuple(true, priority);
 	}
 
-	return std::make_tuple(Error("Expected an operation symbol"), -1);
+	return std::make_tuple(CreateErrorMessageWithAdjacentTokens("Expected an operation symbol", _CurrentTokenIt), -1);
+}
+
+std::tuple<std::optional<std::string>, std::optional<std::string>> Parser::GetTokenSymbolsBetween(std::vector<LexingToken>::iterator actualTokenIt) const
+{
+	std::optional<std::string> previousToken = std::nullopt;
+	std::optional<std::string> nextToken = std::nullopt;
+
+	if (actualTokenIt > _TokenItBegin)
+		previousToken = (actualTokenIt - 1)->Value;
+
+	if (actualTokenIt < _TokenItEnd - 1)
+		nextToken = (actualTokenIt + 1)->Value;
+
+	return std::make_tuple(previousToken, nextToken);
+}
+
+Error Parser::CreateErrorMessageWithAdjacentTokens(std::string message, std::vector<LexingToken>::iterator actualTokenIt) const
+{
+	auto [previousToken, nextToken] = GetTokenSymbolsBetween(actualTokenIt);
+
+	if (previousToken.has_value() && nextToken.has_value())
+	{
+		message += fmt::format(" between '{}' and '{}'", previousToken.value(), nextToken.value());
+		return Error(message);
+	}
+
+	if (previousToken.has_value())
+	{
+		message += fmt::format(" after '{}'", previousToken.value());
+		return Error(message);
+	}
+
+	if (nextToken.has_value())
+	{
+		message += fmt::format(" before '{}'", nextToken.value());
+		return Error(message);
+	}
+
+	return Error(message);
 }
