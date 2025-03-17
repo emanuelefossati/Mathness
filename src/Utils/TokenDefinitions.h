@@ -68,6 +68,12 @@ enum class TokenType
 	ACOS,
 	ATAN,
 
+	MAX,
+	MIN,
+	AVERAGE,
+	SUM,
+	VARIANCE,
+
 	HELP,
 	PRINT,
 	EXIT,
@@ -121,6 +127,11 @@ static const std::unordered_map<std::string, TokenType>& GetIdentifierMap()
 		{ "asin", TokenType::ASIN },
 		{ "acos", TokenType::ACOS },
 		{ "atan", TokenType::ATAN },
+		{"max", TokenType::MAX},
+		{"min", TokenType::MIN},
+		{"average", TokenType::AVERAGE},
+		{"sum", TokenType::SUM},
+		{"variance", TokenType::VARIANCE},
 		{ "help", TokenType::HELP },
 		{ "print", TokenType::PRINT },
 		{ "exit", TokenType::EXIT },
@@ -133,19 +144,24 @@ static const std::unordered_map<std::string, TokenType>& GetIdentifierMap()
 
 static bool IsTokenUnaryFunctionName(TokenType token)
 {
-	return
-		token == TokenType::SQRT ||
-		token == TokenType::ABS ||
-		token == TokenType::NEGATE ||
-		token == TokenType::EXP ||
-		token == TokenType::LN ||
-		token == TokenType::FACTORIAL ||
-		token == TokenType::SIN ||
-		token == TokenType::COS ||
-		token == TokenType::TAN ||
-		token == TokenType::ASIN ||
-		token == TokenType::ACOS ||
-		token == TokenType::ATAN;
+	return token == TokenType::SQRT
+		|| token == TokenType::ABS 
+		|| token == TokenType::NEGATE 
+		|| token == TokenType::EXP 
+		|| token == TokenType::LN 
+		|| token == TokenType::FACTORIAL 
+		|| token == TokenType::SIN 
+		|| token == TokenType::COS 
+		|| token == TokenType::TAN 
+		|| token == TokenType::ASIN 
+		|| token == TokenType::ACOS 
+		|| token == TokenType::ATAN 
+		|| token == TokenType::MAX
+		|| token == TokenType::MIN
+		|| token == TokenType::AVERAGE
+		|| token == TokenType::SUM
+		|| token == TokenType::VARIANCE;
+
 }
 
 static bool IsTokenBinaryFunctionName(TokenType token)
