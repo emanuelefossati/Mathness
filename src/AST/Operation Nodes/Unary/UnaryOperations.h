@@ -12,6 +12,15 @@
 #include "./Sin/SinNode.h"
 #include "./Sqrt/SqrtNode.h"
 #include "./Tan/TanNode.h"
+#include "./Max/MaxNode.h"
+#include "./Min/MinNode.h"
+#include "./Avg/AvgNode.h"
+#include "./Var/VarNode.h"
+#include "./Sum/SummationNode.h"
+#include "./Count/CountNode.h"
+#include "./Distinct/DistinctNode.h"
+
+
 
 static std::shared_ptr<IUnaryNode> CreateUnaryFunction(TokenType tokenType)
 {
@@ -51,5 +60,9 @@ static std::shared_ptr<IUnaryNode> CreateUnaryFunction(TokenType tokenType)
 
 	case TokenType::ATAN:
 		return std::make_shared<ArctanNode>();
+	
+	case TokenType::MAX:
+		return std::make_shared<MaxNode>();
 	}
+
 }

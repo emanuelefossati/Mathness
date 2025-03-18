@@ -62,12 +62,27 @@ struct List
 		return sum;
 	}
 
+	scalar_t Variance() const
+	{
+		scalar_t average = Average();
+		scalar_t sum = 0;
+		scalar_t weightSum = 0;
+
+		for (const auto& element : Elements)
+		{
+			sum += element.Weight * (element.Value - average) * (element.Value - average);
+			weightSum += element.Weight;
+		}
+
+		return sum / weightSum;
+	}
+
 	size_t Count() const
 	{
 		return Elements.size();
 	}
 
-	List&& Set() const
+	List&& Distinct() const
 	{
 		List result;
 

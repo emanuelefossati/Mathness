@@ -54,8 +54,6 @@ NodeResult Parser::ParseLValue(std::vector<LexingToken>& lexingTokens)
 	if (!result.ToBool())
 		return Error("Expected an identifier at the beginning of left value expression");
 
-	assert(_CurrentTokenIt != _TokenItEnd);
-
 	return identifierNode;
 
 }
@@ -177,15 +175,6 @@ std::tuple<std::vector<LexingToken>, std::vector<LexingToken>, std::optional<Err
 
 	return std::make_tuple(_LValueTokenList, _RValueTokenList, Error("Multiple equals signs found"));
 }
-
-//size_t Parser::CurrentTokenIndex() const
-//{
-//	assert(_CurrentTokenIt != _TokenItEnd);
-//
-//	//return std::distance(_CurrentValueTokenList->begin(), _CurrentTokenIt);
-//
-//	return 0;
-//}
 
 NodeResult Parser::ParseExpression()
 {
@@ -420,6 +409,10 @@ NodeResult Parser::ParseMatrix()
 
 NodeResult Parser::ParseList()
 {
+	assert((_CurrentTokenIt)->Type == TokenType::OPEN_CURLY_BRACKET);
+
+	_CurrentTokenIt++;
+
 	return NodeResult();
 }
 

@@ -73,6 +73,8 @@ enum class TokenType
 	AVERAGE,
 	SUM,
 	VARIANCE,
+	COUNT,
+	DISTINCT,
 
 	HELP,
 	PRINT,
@@ -127,11 +129,13 @@ static const std::unordered_map<std::string, TokenType>& GetIdentifierMap()
 		{ "asin", TokenType::ASIN },
 		{ "acos", TokenType::ACOS },
 		{ "atan", TokenType::ATAN },
-		{"max", TokenType::MAX},
-		{"min", TokenType::MIN},
-		{"average", TokenType::AVERAGE},
-		{"sum", TokenType::SUM},
-		{"variance", TokenType::VARIANCE},
+		{ "max", TokenType::MAX},
+		{ "min", TokenType::MIN},
+		{ "average", TokenType::AVERAGE},
+		{ "sum", TokenType::SUM},
+		{ "variance", TokenType::VARIANCE},
+		{ "count", TokenType::COUNT},
+		{ "distinct", TokenType::DISTINCT},
 		{ "help", TokenType::HELP },
 		{ "print", TokenType::PRINT },
 		{ "exit", TokenType::EXIT },
@@ -160,7 +164,9 @@ static bool IsTokenUnaryFunctionName(TokenType token)
 		|| token == TokenType::MIN
 		|| token == TokenType::AVERAGE
 		|| token == TokenType::SUM
-		|| token == TokenType::VARIANCE;
+		|| token == TokenType::VARIANCE
+		|| token == TokenType::COUNT
+		|| token == TokenType::DISTINCT;
 
 }
 

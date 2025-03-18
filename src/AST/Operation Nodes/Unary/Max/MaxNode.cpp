@@ -12,14 +12,8 @@ EvaluationResult MaxNode::GetResult() const
 
 	auto childList = childResult.ToList();
 
-	if (childResultValue.empty())
+	if (childList.Elements.size() == 0)
 		return Error("Max function cannot be applied to an empty list", _TokenRange);
 
-	auto max = childList.Elements[0].Value;
-
-	for (const auto& element : childList.Elements)
-		if (element.Value > max)
-			max = element.Value;
-
-	return max;
+	return childList.Max();
 }
