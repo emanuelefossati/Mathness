@@ -333,8 +333,8 @@ NodeResult Parser::ParseMatrix()
 
 		elements.push_back(currentElement);
 
-		if(_CurrentTokenIt->Type != TokenType::COMMA && 
-			_CurrentTokenIt->Type != TokenType::SEMICOLON && 
+		if (_CurrentTokenIt->Type != TokenType::COMMA &&
+			_CurrentTokenIt->Type != TokenType::SEMICOLON &&
 			_CurrentTokenIt->Type != TokenType::CLOSE_SQUARE_BRACKET)
 			return CreateErrorMessageWithAdjacentTokens("Invalid token after matrix element", _CurrentTokenIt);
 
@@ -397,7 +397,7 @@ NodeResult Parser::ParseMatrix()
 				matrixNode->SetRows(matrixRowCount);
 				matrixNode->SetColumns(matrixColumnCount);
 
-				
+
 
 				return matrixNode;
 			}
@@ -413,7 +413,57 @@ NodeResult Parser::ParseList()
 
 	_CurrentTokenIt++;
 
-	return NodeResult();
+	std::shared_ptr<ListNode> listNode = std::make_shared<ListNode>();
+	std::vector<ListElementNode> elements;
+
+	while (true)
+	{
+		NodeResult currentElementValueExpressionResult = ParseExpression();
+		std::optional<NodeResult> currentElementWeightExpressionResult = std::nullopt;
+
+		if (currentElementValueExpressionResult.IsError())
+			return currentElementValueExpressionResult;
+
+		std::shared_ptr<INode> currentElementValueNode = currentElementValueExpressionResult.ToNode();
+
+		if (_CurrentTokenIt->Type != TokenType::COMMA &&
+			_CurrentTokenIt->Type != TokenType::SEMICOLON &&
+			_CurrentTokenIt->Type != TokenType::CLOSE_CURLY_BRACKET)
+		{
+			return CreateErrorMessageWithAdjacentTokens("Invalid token after list element", _CurrentTokenIt);
+		}
+
+
+
+		if (_CurrentTokenIt->Type == TokenType::COMMA)
+		{
+			_CurrentTokenIt++;
+
+			currentElementWeightExpressionResult = ParseExpression();
+
+			if (currentElementWeightExpressionResult.value().IsError())
+				return currentElementWeightExpressionResult.value();
+		}
+
+		elements.emplace_back(std::make_tuple(currentElementValueNode, currentElementWeightExpressionResult));
+
+		if (_CurrentTokenIt->Type == TokenType::SEMICOLON)
+		{
+			_CurrentTokenIt++;
+
+			continue;
+		}
+
+		else if (_CurrentTokenIt->Type == TokenType::CLOSE_CURLY_BRACKET)
+		{
+			_CurrentTokenIt++;
+
+			break;
+		}
+	}
+
+	listNode->SetElements(elements);
+	return listNode;
 }
 
 

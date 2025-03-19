@@ -2,7 +2,7 @@
 
 EvaluationResult DistinctNode::GetResult() const
 {
-	EvaluationResult childResult = child->GetResult();
+	EvaluationResult childResult = _Child->GetResult();
 
 	if(childResult.IsError() || childResult.IsScalar())
 		return childResult;

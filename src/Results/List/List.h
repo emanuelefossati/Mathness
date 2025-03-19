@@ -10,7 +10,7 @@ struct List
 {
 	struct ListElement
 	{
-		scalar_t Value;
+		scalar_t Value = 0;
 		scalar_t Weight = 1;
 	};
 
@@ -77,7 +77,7 @@ struct List
 		return sum / weightSum;
 	}
 
-	size_t Count() const
+	scalar_t Count() const
 	{
 		return Elements.size();
 	}

@@ -6,21 +6,32 @@ EvaluationResult ListNode::GetResult() const
 
 	for (int i = 0; i < _Elements.size(); i++)
 	{
-		auto& element = _Elements[i];
-		auto result = element->GetResult();
+		auto& [valueNode, weightNode] = _Elements[i];
 
-		if (result.IsError())
-			return result;
+		EvaluationResult valueResult = valueNode->GetResult();
+		EvaluationResult weightResult = weightNode.has_value() ? weightNode.value()->GetResult() : scalar_t{1};
 
 
-		if (result.IsScalar())
-		{
-			scalar_t scalar = result.ToScalar();
-			list.Elements.emplace_back(scalar);
-		}
+		if (valueResult.IsError())
+			return valueResult;
 
-		else
-			return Error(std::format("cannot resolve element inside list"), _TokenRange);
+		if (!valueResult.IsScalar())
+			return Error(std::format("cannot resolve element inside list"));
+
+		if (weightResult.IsError())
+			return weightResult;
+
+		if (!weightResult.IsScalar())
+			return Error(std::format("cannot resolve weight inside list"));
+
+		list.Elements.emplace_back(List::ListElement{valueResult.ToScalar(), weightResult.ToScalar()});
+
+
+
+
+
+
+			
 	}
 
 	return list;
