@@ -146,6 +146,14 @@ void App::ShowResult(EvaluationResult& result) const
 		fmt::print("{}\n", matrix.ToString());
 		return;
 	}
+
+	if (result.IsList())
+	{
+		auto list = result.ToList();
+
+		fmt::print("{}\n", list.ToString());
+		return;
+	}
 }
 
 void App::PrintError(Error error)

@@ -63,6 +63,23 @@ static std::shared_ptr<IUnaryNode> CreateUnaryFunction(TokenType tokenType)
 	
 	case TokenType::MAX:
 		return std::make_shared<MaxNode>();
-	}
 
+	case TokenType::MIN:
+		return std::make_shared<MinNode>();
+
+	case TokenType::AVERAGE:
+		return std::make_shared<AvgNode>();
+
+	case TokenType::SUM:
+		return std::make_shared<SummationNode>();
+
+	case TokenType::VARIANCE:
+		return std::make_shared<VarNode>();
+
+	case TokenType::COUNT:
+		return std::make_shared<CountNode>();
+
+	case TokenType::DISTINCT:
+		return std::make_shared<DistinctNode>();
+	}
 }

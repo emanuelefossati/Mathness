@@ -437,7 +437,8 @@ static scalar_t GetScalarValue(LexingToken token)
 {
 	if (token.Type == TokenType::NUMBER)
 	{
-		return std::stof(token.Value);
+		scalar_t value = std::stod(token.Value);
+		return value;
 	}
 
 	switch (token.Type)

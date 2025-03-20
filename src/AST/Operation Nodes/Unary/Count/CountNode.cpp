@@ -7,8 +7,8 @@ EvaluationResult CountNode::GetResult() const
 	if (childResult.IsError())
 		return childResult;
 
-	if (!childResult.IsMatrix())
-		return Error("Count function can only be applied to matrices", _TokenRange);
+	if (!childResult.IsList())
+		return Error("Count function can only be applied to lists");
 
 	auto list = childResult.ToList();
 

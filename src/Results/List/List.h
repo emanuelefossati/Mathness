@@ -45,7 +45,7 @@ struct List
 
 		for (const auto& element : Elements)
 		{
-			sum += element.Value * weightSum;
+			sum += element.Value * element.Weight;
 			weightSum += element.Weight;
 		}
 
@@ -103,10 +103,10 @@ struct List
 
 		for (int i = 0; i < Elements.size(); i++)
 		{
-			result += fmt::format("{}", Elements[i].Value);
+			result += fmt::format("{}|{}", Elements[i].Value, Elements[i].Weight);
 
 			if (i != Elements.size() - 1)
-				result += ", ";
+				result += "; ";
 		}
 
 		result += "}";

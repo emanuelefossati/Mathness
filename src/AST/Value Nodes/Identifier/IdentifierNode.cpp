@@ -38,6 +38,31 @@ EvaluationResult IdentifierNode::GetResult() const
 		return value;
 	}
 
+	if (value.IsList())
+	{
+		List list = value.ToList();
+
+		if (indices.size() > 1)
+		{
+			return Error("List value can not be indexed with more than one index");
+		}
+
+		if (indices.empty())
+		{
+			return list;
+		}	
+
+
+		int index = indices[0];
+
+		if (index < 0 || index >= list.Elements.size())
+		{
+			return Error("Index out of bounds");
+		}
+
+		return list.Elements[index].Value;
+	}
+
 	assert(value.IsMatrix());
 
 	Matrix matrix = value.ToMatrix();

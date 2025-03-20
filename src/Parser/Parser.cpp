@@ -188,6 +188,8 @@ NodeResult Parser::ParseExpression()
 
 		&Parser::CheckForOpenRoundBracket,
 		&Parser::CheckForOpenSquareBracket,
+		&Parser::CheckForOpenCurlyBracket,
+
 		&Parser::CheckForValue,
 		&Parser::CheckForIdentifier,
 
@@ -419,7 +421,7 @@ NodeResult Parser::ParseList()
 	while (true)
 	{
 		NodeResult currentElementValueExpressionResult = ParseExpression();
-		std::optional<NodeResult> currentElementWeightExpressionResult = std::nullopt;
+		std::optional<std::shared_ptr<INode>> currentElementWeightExpressionResult = std::nullopt;
 
 		if (currentElementValueExpressionResult.IsError())
 			return currentElementValueExpressionResult;
@@ -438,11 +440,12 @@ NodeResult Parser::ParseList()
 		if (_CurrentTokenIt->Type == TokenType::COMMA)
 		{
 			_CurrentTokenIt++;
+			NodeResult currentElementValueExpression = ParseExpression();
 
-			currentElementWeightExpressionResult = ParseExpression();
+			if (currentElementValueExpression.IsError())
+				return currentElementValueExpression;
 
-			if (currentElementWeightExpressionResult.value().IsError())
-				return currentElementWeightExpressionResult.value();
+			currentElementWeightExpressionResult = currentElementValueExpression.ToNode();
 		}
 
 		elements.emplace_back(std::make_tuple(currentElementValueNode, currentElementWeightExpressionResult));
@@ -456,8 +459,6 @@ NodeResult Parser::ParseList()
 
 		else if (_CurrentTokenIt->Type == TokenType::CLOSE_CURLY_BRACKET)
 		{
-			_CurrentTokenIt++;
-
 			break;
 		}
 	}
@@ -517,7 +518,6 @@ ParsingCheckResult Parser::CheckForOpenCurlyBracket(std::shared_ptr<INode>& node
 {
 	if (_CurrentTokenIt->Type == TokenType::OPEN_CURLY_BRACKET)
 	{
-		_CurrentTokenIt++;
 		auto expressionResult = ParseList();
 
 		if (expressionResult.IsError())
