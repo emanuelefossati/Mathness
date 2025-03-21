@@ -76,8 +76,6 @@ enum class TokenType
 	COUNT,
 	DISTINCT,
 
-	HELP,
-	PRINT,
 	EXIT,
 };
 
@@ -136,8 +134,6 @@ static const std::unordered_map<std::string, TokenType>& GetIdentifierMap()
 		{ "variance", TokenType::VARIANCE},
 		{ "count", TokenType::COUNT},
 		{ "distinct", TokenType::DISTINCT},
-		{ "help", TokenType::HELP },
-		{ "print", TokenType::PRINT },
 		{ "exit", TokenType::EXIT },
 	};
 
@@ -409,14 +405,6 @@ struct LexingToken
 
 		case TokenType::ATAN:
 			s_type = "ATAN";
-			break;
-
-		case TokenType::HELP:
-			s_type = "HELP";
-			break;
-
-		case TokenType::PRINT:
-			s_type = "PRINT";
 			break;
 
 		case TokenType::EXIT:

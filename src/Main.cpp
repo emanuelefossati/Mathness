@@ -4,7 +4,7 @@
 
 int main()
 {
-	fmt::println("Mathness v0.1");
+	fmt::println("Mathness v1.0 (Type 'exit' to stop the program)");
 
 	App::GetInstance().Run();
 

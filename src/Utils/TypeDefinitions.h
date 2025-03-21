@@ -35,3 +35,12 @@ static bool double_equals(double a, double b)
 {
 	return std::abs(a - b) < std::numeric_limits<double>::min();
 }
+
+static scalar_t NormalizeAngle(scalar_t angle)
+{
+	angle = std::fmod(angle, 2 * std::numbers::pi);
+	if (angle < 0)
+		angle += 2 * std::numbers::pi;
+
+	return angle;
+}

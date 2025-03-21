@@ -59,12 +59,6 @@ private:
 
 	std::tuple<ParsingCheckResult, int> CheckForArithmeticOperator(std::shared_ptr<IBinaryNode>& node);
 
-	size_t CurrentTokenIndex() const;
-
 	std::tuple<std::optional<std::string>, std::optional<std::string>> GetTokenSymbolsBetween(std::vector<LexingToken>::iterator actualTokenIt) const;
 	Error CreateErrorMessageWithAdjacentTokens(std::string message, std::vector<LexingToken>::iterator actualTokenIt) const;
-
-
-
-
 };

@@ -1,7 +1,7 @@
 #include "App.h"
 #include <string>
 #include <iostream>
-#include "Storage/StorageHandler.h"
+
 
 App& App::GetInstance()
 {
@@ -9,7 +9,7 @@ App& App::GetInstance()
 	return instance;
 }
 
-void ClearComments(std::string& input)
+void App::ClearComments(std::string& input)
 {
 	for (auto it = input.begin(); it != input.end(); it++)
 	{
