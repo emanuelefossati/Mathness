@@ -315,7 +315,8 @@ const std::string Matrix::ToString() const
 				result += "\t";
 		}
 
-		result += "\n";
+		if(r != Rows - 1)
+			result += "\n";
 	}
 
 	return result;

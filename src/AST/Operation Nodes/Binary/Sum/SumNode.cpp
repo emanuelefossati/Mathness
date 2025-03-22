@@ -14,7 +14,7 @@ EvaluationResult SumNode::GetResult() const
 		return rightResult;
 
 	if (leftResult.IsList() || rightResult.IsList())
-		return Error("Cannot perform sum with lists", _TokenRange);
+		return Error("Cannot perform sum with lists");
 
 	if (leftResult.IsScalar() && rightResult.IsScalar())
 	{
@@ -30,12 +30,12 @@ EvaluationResult SumNode::GetResult() const
 		Matrix rightMatrix = rightResult.ToMatrix();
 
 		if (!CanMatricesBeSummed(leftMatrix, rightMatrix))
-			return Error("Cannot add matrices with different dimensions", _TokenRange);
+			return Error("Cannot add matrices with different dimensions");
 
 		return leftMatrix + rightMatrix;
 	}
 	
-	return Error("Cannot sum a scalar with a matrix", _TokenRange);
+	return Error("Cannot sum a scalar with a matrix");
 }
 
 bool SumNode::CanMatricesBeSummed(const Matrix& left, const Matrix& right)

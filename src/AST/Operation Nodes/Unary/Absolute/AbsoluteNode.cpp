@@ -8,7 +8,7 @@ EvaluationResult AbsoluteNode::GetResult() const
 		return childResult;
 
 	if(childResult.IsList())
-		return Error("Cannot take the absolute value of a list", _TokenRange);
+		return Error("Cannot take the absolute value of a list");
 
 	if (childResult.IsScalar())
 		return abs(childResult.ToScalar());

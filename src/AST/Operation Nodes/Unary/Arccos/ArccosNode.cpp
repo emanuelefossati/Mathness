@@ -8,7 +8,7 @@ EvaluationResult ArccosNode::GetResult() const
 		return childResult;
 
 	if (!childResult.IsScalar())
-		return Error("Arccos function can only be applied to scalars", _TokenRange);
+		return Error("Arccos function can only be applied to scalars");
 
 	return std::acos(childResult.ToScalar());
 }

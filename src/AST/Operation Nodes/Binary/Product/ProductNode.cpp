@@ -13,7 +13,7 @@ EvaluationResult ProductNode::GetResult() const
 		return rightResult;
 
 	if (leftResult.IsList() || rightResult.IsList())
-		return Error("Cannot perform product with lists", _TokenRange);
+		return Error("Cannot perform product with lists");
 
 	if (leftResult.IsScalar() && rightResult.IsScalar())
 	{
@@ -29,7 +29,7 @@ EvaluationResult ProductNode::GetResult() const
 		Matrix rightMatrix = rightResult.ToMatrix();
 
 		if (!CanMatricesBeMultiplied(leftMatrix, rightMatrix))
-			return Error("Cannot multiply matrices with incompatible dimensions", _TokenRange);
+			return Error("Cannot multiply matrices with incompatible dimensions");
 
 		Matrix result = leftMatrix * rightMatrix;
 

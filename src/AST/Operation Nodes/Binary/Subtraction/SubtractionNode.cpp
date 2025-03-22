@@ -14,7 +14,7 @@ EvaluationResult SubtractionNode::GetResult() const
 		return rightResult;
 
 	if (leftResult.IsList() || rightResult.IsList())
-		return Error("Cannot perform subtraction with lists", _TokenRange);
+		return Error("Cannot perform subtraction with lists");
 
 	if (leftResult.IsScalar() && rightResult.IsScalar())
 	{
@@ -30,12 +30,12 @@ EvaluationResult SubtractionNode::GetResult() const
 		Matrix rightMatrix = rightResult.ToMatrix();
 
 		if (!CanMatricesBeSubtracted(leftMatrix, rightMatrix))
-			return Error("Cannot subtract matrices with different dimensions", _TokenRange);
+			return Error("Cannot subtract matrices with different dimensions");
 
 		return leftMatrix - rightMatrix;
 	}
 	
-	return Error("Cannot subtract a scalar with a matrix", _TokenRange);
+	return Error("Cannot subtract a scalar with a matrix");
 }
 
 bool SubtractionNode::CanMatricesBeSubtracted(const Matrix& left, const Matrix& right)

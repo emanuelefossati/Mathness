@@ -12,10 +12,10 @@ EvaluationResult PowerNode::GetResult() const
 		return rightResult;
 
 	if (leftResult.IsList() || rightResult.IsList())
-		return Error("Cannot perform power with lists", _TokenRange);
+		return Error("Cannot perform power with lists");
 
 	if (!rightResult.IsScalar())
-		return Error("Exponent must be a scalar", _TokenRange);
+		return Error("Exponent must be a scalar");
 
 	scalar_t exponent = rightResult.ToScalar();
 	
@@ -27,10 +27,10 @@ EvaluationResult PowerNode::GetResult() const
 	Matrix base = leftResult.ToMatrix();
 	
 	if(!base.IsSquare())
-		return Error("Matrix must be square to perform power", _TokenRange);
+		return Error("Matrix must be square to perform power");
 
 	if (!EvaluationResult::IsScalarInteger(exponent))
-		return Error("Exponent must be a non-negative integer", _TokenRange);
+		return Error("Exponent must be a non-negative integer");
 
 	if (exponent == 0)
 		return Matrix::Identity(base.Rows);

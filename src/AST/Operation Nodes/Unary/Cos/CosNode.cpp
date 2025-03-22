@@ -9,7 +9,7 @@ EvaluationResult CosNode::GetResult() const
 		return childResult;
 
 	if (!childResult.IsScalar())
-		return Error("Cosin function can only be applied to scalars", _TokenRange);
+		return Error("Cosin function can only be applied to scalars");
 
 	scalar_t argument = childResult.ToScalar();
 

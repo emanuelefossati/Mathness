@@ -8,12 +8,12 @@ EvaluationResult LnNode::GetResult() const
 		return childResult;
 
 	if (!childResult.IsScalar())
-		return Error("Ln function can only be applied to scalars", _TokenRange);
+		return Error("Ln function can only be applied to scalars");
 
 	scalar_t value = childResult.ToScalar();
 
 	if(value <= 0)
-		return Error("Ln function can only be applied to positive numbers", _TokenRange);
+		return Error("Ln function can only be applied to positive numbers");
 
 	return std::log(value);
 }

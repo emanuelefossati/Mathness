@@ -12,16 +12,16 @@ EvaluationResult LogNode::GetResult() const
 		return right;
 
 	if (!left.IsScalar() || !right.IsScalar())
-		return Error("cannot perform log operation on non-scalar types", _TokenRange);
+		return Error("cannot perform log operation on non-scalar types");
 
 	scalar_t base = left.ToScalar();
 	scalar_t argument = right.ToScalar();
 
 	if (argument == 0)
-		return Error("cannot perform log operation if the argument is 0", _TokenRange);
+		return Error("cannot perform log operation if the argument is 0");
 
 	if (base == 1)
-		return Error("cannot perform log operation if the base is 1", _TokenRange);
+		return Error("cannot perform log operation if the base is 1");
 
 	scalar_t result = std::log(argument) / std::log(base);
 

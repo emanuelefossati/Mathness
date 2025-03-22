@@ -8,7 +8,7 @@ EvaluationResult TanNode::GetResult() const
 		return childResult;
 
 	if (!childResult.IsScalar())
-		return Error("Tan function can only be applied to scalars", _TokenRange);
+		return Error("Tan function can only be applied to scalars");
 
 	scalar_t argument = childResult.ToScalar();
 

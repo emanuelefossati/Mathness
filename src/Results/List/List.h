@@ -79,7 +79,8 @@ struct List
 
 	scalar_t Count() const
 	{
-		return Elements.size();
+		size_t count = Elements.size();
+		return scalar_t(count);
 	}
 
 	List&& Distinct() const

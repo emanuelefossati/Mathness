@@ -8,7 +8,7 @@ EvaluationResult SinNode::GetResult() const
 		return childResult;
 
 	if (!childResult.IsScalar())
-		return Error("Sin function can only be applied to scalars", _TokenRange);
+		return Error("Sin function can only be applied to scalars");
 
 	scalar_t argument = childResult.ToScalar();
 

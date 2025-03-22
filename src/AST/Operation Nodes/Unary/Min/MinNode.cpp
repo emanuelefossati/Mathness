@@ -8,12 +8,12 @@ EvaluationResult MinNode::GetResult() const
 		return childResult;
 
 	if (!childResult.IsList())
-		return Error("Min function can only be applied to lists", _TokenRange);
+		return Error("Min function can only be applied to lists");
 
 	auto childList = childResult.ToList();
 
 	if (childList.Elements.size() == 0)
-		return Error("Min function cannot be applied to an empty list", _TokenRange);
+		return Error("Min function cannot be applied to an empty list");
 
 	return childList.Min();
 }

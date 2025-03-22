@@ -8,7 +8,7 @@ EvaluationResult ExpNode::GetResult() const
 		return childResult;
 
 	if (!childResult.IsScalar())
-		return Error("Exponential function can only be applied to scalars", _TokenRange);
+		return Error("Exponential function can only be applied to scalars");
 
 	return std::exp(childResult.ToScalar());
 }

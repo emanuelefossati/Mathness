@@ -12,7 +12,7 @@ EvaluationResult DivisionNode::GetResult() const
 		return rightResult;
 
 	if (leftResult.IsList() || rightResult.IsList())
-		return Error("Cannot perform division with lists", _TokenRange);
+		return Error("Cannot perform division with lists");
 
 	if (leftResult.IsScalar() && rightResult.IsScalar())
 	{
@@ -20,7 +20,7 @@ EvaluationResult DivisionNode::GetResult() const
 		scalar_t rightScalar = rightResult.ToScalar();
 
 		if (rightScalar == 0)
-			return Error("Division by zero", _TokenRange);
+			return Error("Division by zero");
 
 		return leftScalar / rightScalar;
 	}
@@ -31,7 +31,7 @@ EvaluationResult DivisionNode::GetResult() const
 		Matrix leftMatrix = leftResult.ToMatrix();
 
 		if (rightScalar == 0)
-			return Error("Division by zero", _TokenRange);
+			return Error("Division by zero");
 
 		return leftMatrix / rightScalar;
 	}
@@ -39,10 +39,10 @@ EvaluationResult DivisionNode::GetResult() const
 	Matrix rightMatrix = rightResult.ToMatrix();
 
 	if(!rightMatrix.IsSquare())
-		return Error("Cannot perform division because divisor matrix is not square", _TokenRange);
+		return Error("Cannot perform division because divisor matrix is not square");
 
 	if (rightMatrix.IsSingular())
-		return Error("Cannot perform division because divisor matrix is singular", _TokenRange);
+		return Error("Cannot perform division because divisor matrix is singular");
 	
 
 	if (leftResult.IsMatrix() && rightResult.IsMatrix())
@@ -57,10 +57,10 @@ EvaluationResult DivisionNode::GetResult() const
 EvaluationResult DivisionNode::GetMatrixDivision(const Matrix& left, const Matrix& right) const
 {
 	if (!left.IsSquare())
-		return Error("Cannot perform division because dividend matrix is singular", _TokenRange);
+		return Error("Cannot perform division because dividend matrix is singular");
 
 	if (left.Rows != right.Rows)
-		return Error("Both matrices must have the same size to perform division", _TokenRange);
+		return Error("Both matrices must have the same size to perform division");
 
 	return left * right.Inverse();
 }

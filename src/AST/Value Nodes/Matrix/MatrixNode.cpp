@@ -31,7 +31,7 @@ EvaluationResult MatrixNode::GetResult() const
 		}
 
 		else
-			return Error(std::format("cannot resolve element inside matrix"), _TokenRange);
+			return Error("cannot resolve element inside matrix");
 	}
 
 	if(matrix.Elements.size() == 1)
