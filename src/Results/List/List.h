@@ -83,7 +83,7 @@ struct List
 		return scalar_t(count);
 	}
 
-	List&& Distinct() const
+	List Distinct() const
 	{
 		List result;
 
@@ -93,7 +93,7 @@ struct List
 				result.Elements.push_back(element);
 		}
 
-		return std::move(result);
+		return result;
 	}
 
 

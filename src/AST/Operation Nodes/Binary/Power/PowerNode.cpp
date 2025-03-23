@@ -30,7 +30,7 @@ EvaluationResult PowerNode::GetResult() const
 		return Error("Matrix must be square to perform power");
 
 	if (!EvaluationResult::IsScalarInteger(exponent))
-		return Error("Exponent must be a non-negative integer");
+		return Error("Exponent must be an integer scalar");
 
 	if (exponent == 0)
 		return Matrix::Identity(base.Rows);
