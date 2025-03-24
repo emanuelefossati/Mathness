@@ -7,55 +7,83 @@ You can define variables, reuse them in expressions, and perform computations st
 
 ---
 
-### Features
+## Features
 
-- **Scalar Operations**:
-  - `a + b`
-  - `a - b`
-  - `-b`
-  - `a * b`
-  - `a / b`
-  - `a % b`
-  - `a ^ b`
-- **Matrix Operations**:
-  - `M1 + M2`
-  - `M1 - M2`
-  - `-M1` (meant as negation of each element in the matrix)
-  - `M1 * M2`
-  - `a * M` (and vice versa)
-  - `M1 / M2` (meant as the product of the first matrix with the inverse of the latter one )
-  - `M ^ a` (meant as the iterated product of a square matrix with itself)
-- **Math functions**
-  - `sqrt(a)`
-  - `exp(a)`
-  - `ln(a)`
-  - `abs(a)`
-  - `abs(M)` (meant as the Frobenius norm of the matrix)
-  - `fact(a)` (only for integer values)
-  - `log(a, b)` (log of b to base a)
-- **Trigonometric functions**
-  - `sin(a)`
-  - `cos(a)`
-  - `tan(a)`
-  - `asin(a)`
-  - `acos(a)`
-  - `atan(a)`
-- **Vectorial functions**
-  both only valid for one-dimensional matrices (a.k.a vectors):
+### **Scalar Operations**
 
-  - `dot(V1, V2)` (scalar product)
-  - `cross(V1, V2)` (vectorial product, only defined for vectors with size 3)
-  - `abs(V)` (just the classic norm of a vector)
+- `a + b` (addition)
+- `a - b` (subtraction)
+- `-a` (negation)
+- `a * b` (multiplication)
+- `a / b` (division)
+- `a % b` (modulo, only for integers)
+- `a ^ b` (exponentiation)
 
-- **Aggregation Operations**
-  operations performed on lists of (weighted) scalar values
+### **Matrix Operations**
 
-  - `max(L)`
-  - `min(L)`
-  - `count(L)`
-  - `sum(L)`
-  - `avg(L)`
-  - `var(L)`
-  - `distinct(L)` (returns a version of the original list without duplicated elements)
+- `M1 + M2` (element-wise addition)
+- `M1 - M2` (element-wise subtraction)
+- `-M1` (negation of each element)
+- `M1 * M2` (matrix multiplication)
+- `a * M` (scalar-matrix multiplication)
+- `M1 / M2` (multiplication of `M1` with the inverse of `M2`)
+- `M ^ a` (matrix exponentiation, only for square matrices)
+
+### **Mathematical Functions**
+
+- `sqrt(a)` (square root)
+- `exp(a)` (exponential function)
+- `ln(a)` (natural logarithm)
+- `abs(a)` (absolute value)
+- `abs(M)` (Frobenius norm of matrix `M`)
+- `fact(a)` (factorial, only for integers)
+- `log(a, b)` (logarithm of `b` to base `a`)
+
+### **Trigonometric Functions**
+
+- `sin(a)`, `cos(a)`, `tan(a)`
+- `asin(a)`, `acos(a)`, `atan(a)`
+
+### **Vector Functions**
+
+(Only applicable to **vectors**, i.e., one-dimensional matrices)
+
+- `dot(V1, V2)` (dot product)
+- `cross(V1, V2)` (cross product, only for 3D vectors)
+- `abs(V)` (Euclidean norm of vector `V`)
+
+### **Aggregation Functions**
+
+(Operations performed on lists of scalar values)
+
+- `max(L)`, `min(L)` (maximum and minimum)
+- `count(L)` (number of elements)
+- `sum(L)`, `avg(L)`, `var(L)` (sum, average, variance)
+- `distinct(L)` (removes duplicate elements from the list)
+
+### **Storage Operations**
+
+- `var = a`, `var = L`, `var = M` – Define or overwrite a stored variable (`var`) with a scalar (`a`), list (`L`), or matrix (`M`).
+- `var`, `var[i]`, `var[i][j]` – Retrieve stored values:
+  - `var` retrieves the entire value.
+  - `var[i]` accesses the `i`-th element (for lists and vectors).
+  - `var[i][j]` accesses the element at row `i`, column `j` (for matrices).
+    **Convention**: Indexing starts at 0 (zero-based indexing).
 
 ---
+
+## Installation
+
+### Prerequisites
+
+- **C++ Compiler**: A modern C++ compiler that supports C++23.
+- **CMake**: Version 3.10 or higher.
+- **vcpkg**: For dependency management.
+
+### Steps to Install
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/emanuelefossati/Mathness.git
+   cd Mathness
+   ```
