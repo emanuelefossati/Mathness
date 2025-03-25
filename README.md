@@ -78,12 +78,28 @@ You can define variables, reuse them in expressions, and perform computations st
 
 - **C++ Compiler**: A modern C++ compiler that supports C++23.
 - **CMake**: Version 3.10 or higher.
-- **vcpkg**: For dependency management.
 
 ### Steps to Install
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/emanuelefossati/Mathness.git
    cd Mathness
    ```
+
+2. Clone vcpkg inside the root of the project:
+   ```bash
+   git clone https://github.com/microsoft/vcpkg.git
+   ```
+3. Configure the project with CMAKE
+
+```bash
+cmake -B build -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
+```
+
+4. Compile the project
+
+```bash
+cmake --build build
+```
