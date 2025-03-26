@@ -83,19 +83,21 @@ You can define variables, reuse them in expressions, and perform computations st
 
 1. Clone the repository:
 
-   ```bash
-   git clone https://github.com/emanuelefossati/Mathness.git
-   cd Mathness
-   ```
+```bash
+git clone https://github.com/emanuelefossati/Mathness.git
+cd Mathness
+```
 
 2. Clone vcpkg inside the root of the project:
-   ```bash
-   git clone https://github.com/microsoft/vcpkg.git
-   ```
+
+```bash
+git clone https://github.com/microsoft/vcpkg.git
+```
+
 3. Configure the project with CMAKE
 
 ```bash
-cmake -B build -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
+cmake -B build -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake
 ```
 
 4. Compile the project
@@ -103,3 +105,22 @@ cmake -B build -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake -
 ```bash
 cmake --build build
 ```
+
+5. After building the project, you can run the executable from the terminal:
+
+##### On Windows:
+
+```bash
+cd build/Debug  # or build/Release if built in Release mode
+.\Mathness.exe
+```
+
+##### On Linux/MacOS
+
+```bash
+cd build
+./Mathness
+```
+
+**Note**: If you're using cmd.exe or PowerShell, ANSI color codes may not display correctly.
+For the best experience, use Windows Terminal or another ANSI-compatible terminal.
