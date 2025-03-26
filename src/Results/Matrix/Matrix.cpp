@@ -195,12 +195,12 @@ const Matrix Matrix::Inverse() const
 	return result;
 }
 
-constexpr bool Matrix::IsSquare() const
+bool Matrix::IsSquare() const
 {
 	return Rows == Columns;
 }
 
-constexpr bool Matrix::IsIdentity() const
+bool Matrix::IsIdentity() const
 {
 	assert(IsSquare());
 
@@ -219,7 +219,7 @@ constexpr bool Matrix::IsIdentity() const
 	return true;
 }
 
-constexpr bool Matrix::IsDiagonal() const
+bool Matrix::IsDiagonal() const
 {
 	assert(IsSquare());
 
@@ -242,7 +242,7 @@ bool Matrix::IsSingular() const
 	return Determinant() == 0;
 }
 
-constexpr bool Matrix::IsVector() const
+bool Matrix::IsVector() const
 {
 	return (Rows == 1) != (Columns == 1);
 }
