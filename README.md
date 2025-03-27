@@ -205,3 +205,5 @@ For the best experience, use Windows Terminal or another ANSI-compatible termina
 ---
 
 ### Acknowledgments
+
+**fmt** - Used for formatted output (https://github.com/fmtlib/fmt)
