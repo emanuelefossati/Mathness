@@ -124,3 +124,84 @@ cd build
 
 **Note**: If you're using cmd.exe or PowerShell, ANSI color codes may not display correctly.
 For the best experience, use Windows Terminal or another ANSI-compatible terminal.
+
+---
+
+### Examples
+
+**Scalar Operations**
+
+```
+>>> 5 + 3
+8
+>>> -5 * (4 - 8)
+20
+>>> log(2, 64)
+6
+>>> -sin(pi/2)
+-1
+>>> 2 * ln(e ^ 3)
+6
+>>> fact(5)
+120
+```
+
+**Matrix Operations**
+
+```
+>>> M1 = [1, 2; 3, 4] # Matrix declaration
+1       2
+3       4
+>>> M1 * 3 # Matrix-scalar product
+3       6
+9       12
+>>> M2 = [1 + 2, 3 - 4; 5 * 6, 7 / 8] # Each element inside can hold an expression
+3       -1
+30      0.875
+```
+
+**Vector Operations**
+
+```
+>>> V1 = [1, 2, 3]
+1       2       3
+>>> V2 = [4, 5, 6]
+4       5       6
+>>> dot(V1, V2)
+32
+>>> cross(V1, V2)
+-3      6       -3
+```
+
+**List Operations**
+
+```
+>>> L1 = {1, 8; 20, 2} # List declaration
+{1|8; 20|2} # Notation: {value | weight}
+
+>>> {1 + 9; 2 * 3; 3 / 6; 4 ^ 0} # If you omit weight, by default it's 1
+{10|1; 6|1; 0.5|1; 1|1} # {value | weight, by default is 1}
+```
+
+**Storage Operations**
+
+```
+>>> a = {1; 2; 3; 4}
+{1|1; 2|1; 3|1; 4|1}
+>>> a[1]
+2
+>>> b = [1, 2; 0, 4]
+1       2
+0       4
+>>> b[1][0]
+0
+>>> b[1][0] = 3
+3
+>>> b
+1       2
+3       4
+```
+
+---
+
+### Acknowledgments
